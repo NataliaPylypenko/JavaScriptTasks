@@ -79,6 +79,10 @@ const deleteTransaction = id => {
     });
 };
 
+const getTotalBalance = () => {
+    return transactions.reduce((a, b) => a += b.amount, 0)
+};
+
 console.log(transactions);
 
 addTransaction(getRandomCategory(categories), randomInteger(-1000, 1000));
@@ -87,9 +91,9 @@ addTransaction(getRandomCategory(categories), randomInteger(-1000, 1000), 'hello
 
 console.log(transactions);
 
-deleteTransaction(12);
+// deleteTransaction(12);
 
-console.log(transactions);
+console.log('Total Balance', getTotalBalance());
 
 
 /*

@@ -8,51 +8,47 @@
     Додавання та видалення транзакцій.
     Створіть функцію, яка додає нову транзакцію з інформацією про суму та опис.
     Створіть функцію, яка видаляє транзакцію за індексом.
+
     Розрахунок загального балансу.
-
     Створіть функцію, яка обчислює і повертає поточний баланс (сума всіх транзакцій).
+
     Фільтрація транзакцій за певним критерієм.
-
     Створіть функцію, яка приймає умову фільтрації (наприклад, всі транзакції з позитивними сумами) та повертає список транзакцій, що відповідають цій умові.
+
     Відображення історії транзакцій.
-
     Створіть функцію, яка виводить список транзакцій у зрозумілому форматі (наприклад, "Транзакція 1: +$100 - Покупка товару").
+
     Збереження та завантаження даних.
+    Реалізуйте можливість зберігати поточний стан системи фінансів у локальному сховищі (localStorage)
+    та завантажувати дані при завантаженні сторінки.
 
-    Реалізуйте можливість зберігати поточний стан системи фінансів у локальному сховищі (localStorage) та завантажувати дані при завантаженні сторінки.
     Візуалізація даних.
-
     Додайте можливість побудови графіка зміни балансу з часом.
-    Це завдання вимагає від вас використання функцій, масивів, обробників подій та роботи з локальним сховищем. Також, ви можете використовувати HTML та CSS для створення користувацького інтерфейсу.
+    Це завдання вимагає від вас використання функцій, масивів, обробників подій та роботи з локальним сховищем.
+    Також, ви можете використовувати HTML та CSS для створення користувацького інтерфейсу.
 
     Бажаю успіху у вирішенні цього складного завдання на тему функцій у JavaScript!
 
  */
 
 
-const randomInteger = (min, max) =>  Math.floor(min + Math.random() * (max + 1 - min));
+/*---------- additional functions ----------*/
+
+const randomInteger = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
 
 const generate = (keyLength, characters) => [...Array(keyLength)]
     .map( () => characters[randomInteger(0, characters.length - 1)])
     .join('');
 
-function generateUniqueId() {
-    return generate(9, 'abcdefghijklmnopqrstuvwxyz0123456789');
-}
+const generateUniqueId = () => generate(9, 'abcdefghijklmnopqrstuvwxyz0123456789');
 
-function formatDate(date) {
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
-    return date.toLocaleDateString('uk-UA', options);
-}
-
-function getRandomCategory(categories) {
-    const randomIndex = Math.floor(Math.random() * categories.length);
-    return categories[randomIndex];
-}
+const formatDate = date => date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
 
 const categories = ['utility payments', 'purchases', 'make transfer', 'receive transfer', 'replenishment'];
+const filterCondition = ['expenses', 'income', 'utility payments', 'purchases', 'make transfer', 'receive transfer', 'replenishment'];
+const getRandomItem = item => item[randomInteger(0, item.length - 1)];
 
-
+/*---------- /additional functions ----------*/
 
 
 let transactions = [];
@@ -79,21 +75,37 @@ const deleteTransaction = id => {
     });
 };
 
-const getTotalBalance = () => {
-    return transactions.reduce((a, b) => a += b.amount, 0)
+const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
+
+const filteredTransactions = {
+    'expenses': () => transactions.filter(a => a.amount < 0),
+    'income': () => transactions.filter(a => a.amount > 0),
+    'utility payments': () => transactions.filter(a => a.category === 'utility payments'),
+    'purchases': () => transactions.filter(a => a.category === 'purchases'),
+    'make transfer': () => transactions.filter(a => a.category === 'make transfer'),
+    'receive transfer': () => transactions.filter(a => a.category === 'receive transfer'),
+    'replenishment': () => transactions.filter(a => a.category === 'replenishment'),
+};
+
+const getFilteredTransactions = (filterCondition) => {
+    return filteredTransactions[filterCondition]();
 };
 
 console.log(transactions);
 
-addTransaction(getRandomCategory(categories), randomInteger(-1000, 1000));
-addTransaction(getRandomCategory(categories), randomInteger(-1000, 1000), 'for bread)');
-addTransaction(getRandomCategory(categories), randomInteger(-1000, 1000), 'hello)');
+addTransaction(getRandomItem(categories), randomInteger(-1000, 1000));
+addTransaction(getRandomItem(categories), randomInteger(-1000, 1000), 'for bread)');
+addTransaction(getRandomItem(categories), randomInteger(-1000, 1000), 'hello)');
+addTransaction(getRandomItem(categories), randomInteger(-1000, 1000));
+addTransaction(getRandomItem(categories), randomInteger(-1000, 1000), 'for coffee');
 
 console.log(transactions);
 
 // deleteTransaction(12);
 
 console.log('Total Balance', getTotalBalance());
+
+console.log('Filtered Transactions', getFilteredTransactions(getRandomItem(filterCondition)));
 
 
 /*

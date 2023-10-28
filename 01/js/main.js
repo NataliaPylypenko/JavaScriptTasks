@@ -87,11 +87,10 @@ const filteredTransactions = {
     'replenishment': () => transactions.filter(a => a.category === 'replenishment'),
 };
 
-const getFilteredTransactions = (filterCondition) => {
-    return filteredTransactions[filterCondition]();
-};
+const getFilteredTransactions = (filterCondition) => filteredTransactions[filterCondition]();
 
-console.log(transactions);
+const getTransactionsHistory = () => transactions.map((a, i) => console.log(`Transaction ${++i}: ${a.amount}$ - ${a.category}`));
+
 
 addTransaction(getRandomItem(categories), randomInteger(-1000, 1000));
 addTransaction(getRandomItem(categories), randomInteger(-1000, 1000), 'for bread)');
@@ -107,28 +106,9 @@ console.log('Total Balance', getTotalBalance());
 
 console.log('Filtered Transactions', getFilteredTransactions(getRandomItem(filterCondition)));
 
+getTransactionsHistory();
 
 /*
-
-deleteTransaction(id) {}
-
-for(-90; today){
-  for(rand(1, 50), ){
-    addTransaction(rand(-10000, 10000, 'caategoiry',  today))
-  }
-}
-
-getAmount(){
-  transactions.reduce(....)
-}
-
-
-criteria = {datefrom: '2029-20', dateto: '2020', amountfrom: '0'}
-
-findTransactionsBy(criteria){
-
-  transactions.filter(....)
-}
 
 renderTransactions(){
   document.

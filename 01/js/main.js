@@ -91,6 +91,14 @@ const getFilteredTransactions = (filterCondition) => filteredTransactions[filter
 
 const getTransactionsHistory = () => transactions.map((a, i) => console.log(`Transaction ${++i}: ${a.amount}$ - ${a.category}`));
 
+const setTransactions = (key, obj) => {
+    localStorage.setItem(key, JSON.stringify(obj));
+};
+
+const getTransactions = (key) => {
+    return JSON.parse(localStorage.getItem(key));
+};
+
 
 addTransaction(getRandomItem(categories), randomInteger(-1000, 1000));
 addTransaction(getRandomItem(categories), randomInteger(-1000, 1000), 'for bread)');
@@ -108,19 +116,8 @@ console.log('Filtered Transactions', getFilteredTransactions(getRandomItem(filte
 
 getTransactionsHistory();
 
-/*
+setTransactions('transactions', transactions);
 
-renderTransactions(){
-  document.
+console.log('Get Transactions', getTransactions('transactions'));
 
-}
-
-saveTransactions(){
-  localstorage.save(Json.deconde(transactions)
-}
-
-loadTransacions(){
-  localstorage.get(Json.encode(transactions)).
-}
-
-*/
+// localStorage.clear();

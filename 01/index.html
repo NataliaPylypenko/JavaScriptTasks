@@ -27,25 +27,19 @@
         </div>
     </div>
 
-    <div class="container ">
+    <div class="container">
         <h3 class="h3">New Record</h3>
         <div class="wrapper">
-            <form action="">
+            <form action="" id="newRecord">
                 <div class="mb-3">
-                    <label for="sel1" class="form-label">Select a category:</label>
-                    <select class="form-select" id="sel1" name="sellist1">
-                        <option>Salary</option>
-                        <option>Transport</option>
-                        <option>Food</option>
-                        <option>Entertainment</option>
-                        <option>Utility Payments</option>
-                    </select>
+                    <label for="categorySelect" class="form-label">Select a category:</label>
+                    <select class="form-select" id="categorySelect" name="categorySelect"></select>
                 </div>
                 <div class="mb-3">
-                    <label for="sel1" class="form-label">Select a type:</label>
+                    <label for="type" class="form-label">Select a type:</label>
                     <div class="form-check">
-                        <input type="radio" class="form-check-input" id="radio1" name="optradio" value="option1" checked>
-                        <label class="form-check-label" for="radio1">income</label>
+                        <input type="radio" class="form-check-input" id="type" name="optradio" value="option1" checked>
+                        <label class="form-check-label" for="type">income</label>
                     </div>
                     <div class="form-check">
                         <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
@@ -59,6 +53,9 @@
                 <div class="mb-3">
                     <label for="comment" class="form-label">Comment:</label>
                     <textarea class="form-control" rows="2" id="comment" name="text"></textarea>
+                </div>
+                <div class="mb-3">
+                    <button type="button" id="newRecordBtn" class="btn btn-outline-success">Add New Record</button>
                 </div>
             </form>
         </div>

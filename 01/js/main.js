@@ -45,10 +45,9 @@ const getRandomArrayItem = array => array[randomInteger(0, array.length - 1)];
 
 /*---------- /additional functions ----------*/
 
-
 const transactionService = () => {
     const transactions = [];
-    const CATEGORIES = ['salary', 'transport', 'food', 'entertainment', 'utility payments'];
+    const CATEGORIES = ['Salary', 'Transport', 'Food', 'Entertainment', 'Utility Payments'];
     const FILTER_CONDITION = ['expenditure', 'income', 'salary', 'transport', 'food', 'entertainment', 'utility payments'];
     const TRANSACTION_FILTERS = {
         'expenditure': () => transactions.filter(a => a.amount < 0),
@@ -60,13 +59,24 @@ const transactionService = () => {
         'utility payments': () => transactions.filter(a => a.category === 'utility payments'),
     };
 
-    const add = (amount, category, comment = '') => {
+    const renderCategorySelect = () => {
+        const categorySelect = document.querySelector('#categorySelect');
+        let str = '';
+
+        CATEGORIES.map(category => {
+            str += `<option>${category}</option>`
+        });
+
+        categorySelect.innerHTML = str;
+    };
+
+    const add = (amount, category, comment) => {
         transactions.push({
             id: generateUniqueId(),
             date: formatDate(new Date()),
-            amount,
-            category,
-            comment,
+            amount: amount,
+            category: category,
+            comment: comment,
         });
     };
 
@@ -108,6 +118,7 @@ const transactionService = () => {
     };
 
     return {
+        renderCategorySelect,
         add,
         save,
         findBy,
@@ -123,13 +134,31 @@ const transactionService = () => {
 
 const transactions = transactionService();
 
-transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES));
-transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES),'for bread)');
-transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES) ,'hello)');
-transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES));
-transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES), 'for coffee');
+transactions.renderCategorySelect();
 
+// Render transactions
 transactions.render();
+
+
+// Add New Record
+const newRecordBtn = document.getElementById('newRecordBtn');
+
+newRecordBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    let category = document.getElementById('categorySelect').value;
+    let type = document.getElementById('type').value;
+    let amount = Math.abs(document.getElementById('amount').value);
+    let comment = document.getElementById('comment').value;
+
+    amount = type === 'income' ? amount : -amount;
+
+    transactions.add(amount, category, comment);
+
+    // Rerender transactions
+    transactions.render();
+});
+
 
 // console.log('Total Balance', transactions.getTotalBalance());
 // console.log('Filtered Transactions', transactions.findBy(getRandomArrayItem(transactions.FILTER_CONDITION)));

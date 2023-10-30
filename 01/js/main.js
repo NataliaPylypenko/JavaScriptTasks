@@ -70,6 +70,31 @@ const transactionService = () => {
         categorySelect.innerHTML = str;
     };
 
+    const registerEvents = () => {
+        const newRecordForm = document.getElementById('newRecordForm');
+        const newRecordBtn = document.getElementById('newRecordBtn');
+
+        newRecordBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            let category = document.getElementById('categorySelect').value;
+            let type = document.querySelector('input[name="type"]:checked').value;
+            let amount = Math.abs(document.getElementById('amount').value);
+            let comment = document.getElementById('comment').value;
+            amount = type === 'income' ? amount : -amount;
+
+            newRecordForm.reset();
+
+            // Add New Record
+            add(amount, category, comment);
+
+            // Rerender Transactions
+            render();
+        });
+    };
+
+    registerEvents();
+
     const add = (amount, category, comment) => {
         transactions.push({
             id: generateUniqueId(),
@@ -139,25 +164,6 @@ transactions.renderCategorySelect();
 // Render transactions
 transactions.render();
 
-
-// Add New Record
-const newRecordBtn = document.getElementById('newRecordBtn');
-
-newRecordBtn.addEventListener('click', function (e) {
-    e.preventDefault();
-
-    let category = document.getElementById('categorySelect').value;
-    let type = document.getElementById('type').value;
-    let amount = Math.abs(document.getElementById('amount').value);
-    let comment = document.getElementById('comment').value;
-
-    amount = type === 'income' ? amount : -amount;
-
-    transactions.add(amount, category, comment);
-
-    // Rerender transactions
-    transactions.render();
-});
 
 
 // console.log('Total Balance', transactions.getTotalBalance());

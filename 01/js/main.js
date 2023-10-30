@@ -48,24 +48,24 @@ const getRandomArrayItem = array => array[randomInteger(0, array.length - 1)];
 
 const transactionService = () => {
     const transactions = [];
-    const CATEGORIES = ['utility payments', 'purchases', 'make transfer', 'receive transfer', 'replenishment'];
-    const FILTER_CONDITION = ['expenses', 'income', 'utility payments', 'purchases', 'make transfer', 'receive transfer', 'replenishment'];
+    const CATEGORIES = ['salary', 'transport', 'food', 'entertainment', 'utility payments'];
+    const FILTER_CONDITION = ['expenditure', 'income', 'salary', 'transport', 'food', 'entertainment', 'utility payments'];
     const TRANSACTION_FILTERS = {
-        'expenses': () => transactions.filter(a => a.amount < 0),
+        'expenditure': () => transactions.filter(a => a.amount < 0),
         'income': () => transactions.filter(a => a.amount > 0),
+        'salary': () => transactions.filter(a => a.category === 'salary'),
+        'transport': () => transactions.filter(a => a.category === 'transport'),
+        'food': () => transactions.filter(a => a.category === 'food'),
+        'entertainment': () => transactions.filter(a => a.category === 'entertainment'),
         'utility payments': () => transactions.filter(a => a.category === 'utility payments'),
-        'purchases': () => transactions.filter(a => a.category === 'purchases'),
-        'make transfer': () => transactions.filter(a => a.category === 'make transfer'),
-        'receive transfer': () => transactions.filter(a => a.category === 'receive transfer'),
-        'replenishment': () => transactions.filter(a => a.category === 'replenishment'),
     };
 
-    const add = (category, amount, comment = '') => {
+    const add = (amount, category, comment = '') => {
         transactions.push({
             id: generateUniqueId(),
             date: formatDate(new Date()),
-            category,
             amount,
+            category,
             comment,
         });
     };
@@ -85,6 +85,8 @@ const transactionService = () => {
         transactions.concat(JSON.parse(localStorage.getItem('transactions')));
     };
 
+    load();
+
     const findBy = (filterCondition) => TRANSACTION_FILTERS[filterCondition]();
 
     const render = () => {
@@ -94,8 +96,8 @@ const transactionService = () => {
         transactions.map((transaction, i) => {
             str += `<tr>
                         <td>${++i}</td>
-                        <td>${transaction.date}</td>
                         <td>${transaction.amount}$</td>
+                        <td>${transaction.date}</td>
                         <td>${transaction.category}</td>
                         <td>${transaction.comment}</td>
                         <td><button type="button" class="btn btn-outline-danger">Remove</button></td>
@@ -104,8 +106,6 @@ const transactionService = () => {
 
         tableBody.innerHTML = str;
     };
-
-    load();
 
     return {
         add,
@@ -123,11 +123,11 @@ const transactionService = () => {
 
 const transactions = transactionService();
 
-transactions.add(getRandomArrayItem(transactions.CATEGORIES), randomInteger(-1000, 1000));
-transactions.add(getRandomArrayItem(transactions.CATEGORIES), randomInteger(-1000, 1000), 'for bread)');
-transactions.add(getRandomArrayItem(transactions.CATEGORIES), randomInteger(-1000, 1000), 'hello)');
-transactions.add(getRandomArrayItem(transactions.CATEGORIES), randomInteger(-1000, 1000));
-transactions.add(getRandomArrayItem(transactions.CATEGORIES), randomInteger(-1000, 1000), 'for coffee');
+transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES));
+transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES),'for bread)');
+transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES) ,'hello)');
+transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES));
+transactions.add(randomInteger(-1000, 1000), getRandomArrayItem(transactions.CATEGORIES), 'for coffee');
 
 transactions.render();
 

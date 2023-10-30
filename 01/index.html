@@ -31,7 +31,35 @@
         <h3 class="h3">New Record</h3>
         <div class="wrapper">
             <form action="">
-                New Record
+                <div class="mb-3">
+                    <label for="sel1" class="form-label">Select a category:</label>
+                    <select class="form-select" id="sel1" name="sellist1">
+                        <option>Salary</option>
+                        <option>Transport</option>
+                        <option>Food</option>
+                        <option>Entertainment</option>
+                        <option>Utility Payments</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="sel1" class="form-label">Select a type:</label>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="radio1" name="optradio" value="option1" checked>
+                        <label class="form-check-label" for="radio1">income</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="radio2" name="optradio" value="option2">
+                        <label class="form-check-label" for="radio2">expenditure</label>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="amount" class="form-label">Amount:</label>
+                    <input type="text" class="form-control" id="amount" placeholder="Enter amount" name="amount">
+                </div>
+                <div class="mb-3">
+                    <label for="comment" class="form-label">Comment:</label>
+                    <textarea class="form-control" rows="2" id="comment" name="text"></textarea>
+                </div>
             </form>
         </div>
     </div>
@@ -43,8 +71,8 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Date</th>
                         <th>Amount</th>
+                        <th>Date</th>
                         <th>Category</th>
                         <th>Comment</th>
                         <th></th>

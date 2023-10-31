@@ -48,7 +48,6 @@ const getRandomArrayItem = array => array[randomInteger(0, array.length - 1)];
 const transactionService = () => {
     const transactions = [];
     const CATEGORIES = ['Salary', 'Transport', 'Food', 'Entertainment', 'Utility Payments'];
-    const FILTER_CONDITION = ['expenditure', 'income', 'salary', 'transport', 'food', 'entertainment', 'utility payments'];
     const TRANSACTION_FILTERS = {
         'expenditure': () => transactions.filter(a => a.amount < 0),
         'income': () => transactions.filter(a => a.amount > 0),
@@ -128,7 +127,12 @@ const transactionService = () => {
 
     const renderTotalBalance = () => {
         const totalBalance = document.querySelector('#totalBalance');
-        totalBalance.innerHTML = `<h1>${getTotalBalance()}$</h1>`
+        const sum = getTotalBalance();
+        let cl = 'green';
+        if (sum < 0) {
+            cl = 'red';
+        }
+        totalBalance.innerHTML = `<h1 style="color:${cl}">${sum}$</h1>`
     };
 
 

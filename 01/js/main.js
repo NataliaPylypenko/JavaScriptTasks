@@ -92,6 +92,9 @@ const transactionService = () => {
             // Rerender Transactions
             render();
 
+            // Rerender Total Balance
+            renderTotalBalance();
+
             // Save To LocalStorage
             save();
         });
@@ -113,12 +116,20 @@ const transactionService = () => {
                 // Rerender Transactions
                 render();
 
+                // Render Total Balance
+                renderTotalBalance();
+
                 // Save To LocalStorage
                 save();
             }
         });
     };
     removeItemEvents();
+
+    const renderTotalBalance = () => {
+        const totalBalance = document.querySelector('#totalBalance');
+        totalBalance.innerHTML = `<h1>${getTotalBalance()}$</h1>`
+    };
 
 
     const add = (amount, category, comment) => {
@@ -168,17 +179,15 @@ const transactionService = () => {
     };
 
     return {
-        add,
-        save,
-        load,
-        remove,
-        getTotalBalance,
-        findBy,
+        renderTotalBalance,
         render,
     };
 };
 
 const transactions = transactionService();
+
+// Render Total Balance
+transactions.renderTotalBalance();
 
 // Render transactions
 transactions.render();

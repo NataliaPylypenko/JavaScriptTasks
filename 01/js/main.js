@@ -69,8 +69,9 @@ const transactionService = () => {
 
         categorySelect.innerHTML = str;
     };
+    renderCategorySelect();
 
-    const registerEvents = () => {
+    const formSubmissionEvents = () => {
         const newRecordForm = document.getElementById('newRecordForm');
         const newRecordBtn = document.getElementById('newRecordBtn');
 
@@ -92,8 +93,36 @@ const transactionService = () => {
             render();
         });
     };
+    formSubmissionEvents();
 
-    registerEvents();
+    const removeItemEvents = () => {
+        const tableHistory = document.querySelector('#history');
+        const btns = document.querySelectorAll('#history button');
+
+        function removeElement(arr, element) {
+            const indexOfElement = arr.indexOf(element);
+            return indexOfElement !== -1 ? arr.splice(indexOfElement, 1) : arr;
+        }
+
+        tableHistory.addEventListener('click', e => {
+            e.preventDefault();
+
+            if (e.target && e.target.tagName === "BUTTON") {
+                let id = e.target.getAttribute('data-id');
+                for (let i = 0; i < transactions.length; i++) {
+                    if (transactions[i].id === id) {
+                        removeElement(transactions, transactions[i]);
+                        break;
+                    }
+                }
+            }
+
+            // Rerender Transactions
+            render();
+        });
+    };
+    removeItemEvents();
+
 
     const add = (amount, category, comment) => {
         transactions.push({
@@ -105,13 +134,6 @@ const transactionService = () => {
         });
     };
 
-    const remove = id => {
-        let idx = transactions.findIndex((item) => item.id === id);
-        idx !== -1  &&  transactions.splice(idx, 1);
-    };
-
-    const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
-
     const save = () => {
         localStorage.setItem('transactions', JSON.stringify(transactions));
     };
@@ -119,8 +141,14 @@ const transactionService = () => {
     const load = () => {
         transactions.concat(JSON.parse(localStorage.getItem('transactions')));
     };
-
     load();
+
+    const remove = id => {
+        let idx = transactions.findIndex((item) => item.id === id);
+        idx !== -1  &&  transactions.splice(idx, 1);
+    };
+
+    const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
 
     const findBy = (filterCondition) => TRANSACTION_FILTERS[filterCondition]();
 
@@ -135,7 +163,7 @@ const transactionService = () => {
                         <td>${transaction.date}</td>
                         <td>${transaction.category}</td>
                         <td>${transaction.comment}</td>
-                        <td><button type="button" class="btn btn-outline-danger">Remove</button></td>
+                        <td><button type="button" data-id="${transaction.id}" class="btn btn-outline-danger">Remove</button></td>
                     </tr>`
         });
 
@@ -143,23 +171,16 @@ const transactionService = () => {
     };
 
     return {
-        renderCategorySelect,
         add,
         save,
-        findBy,
         remove,
         getTotalBalance,
+        findBy,
         render,
-        getAll: () => transactions,
-        CATEGORIES,
-        FILTER_CONDITION,
-        TRANSACTION_FILTERS,
     };
 };
 
 const transactions = transactionService();
-
-transactions.renderCategorySelect();
 
 // Render transactions
 transactions.render();

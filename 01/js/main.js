@@ -97,28 +97,19 @@ const transactionService = () => {
 
     const removeItemEvents = () => {
         const tableHistory = document.querySelector('#history');
-        const btns = document.querySelectorAll('#history button');
-
-        function removeElement(arr, element) {
-            const indexOfElement = arr.indexOf(element);
-            return indexOfElement !== -1 ? arr.splice(indexOfElement, 1) : arr;
-        }
 
         tableHistory.addEventListener('click', e => {
             e.preventDefault();
 
             if (e.target && e.target.tagName === "BUTTON") {
                 let id = e.target.getAttribute('data-id');
-                for (let i = 0; i < transactions.length; i++) {
-                    if (transactions[i].id === id) {
-                        removeElement(transactions, transactions[i]);
-                        break;
-                    }
-                }
-            }
 
-            // Rerender Transactions
-            render();
+                // Remove record
+                remove(id);
+
+                // Rerender Transactions
+                render();
+            }
         });
     };
     removeItemEvents();
@@ -144,7 +135,7 @@ const transactionService = () => {
     load();
 
     const remove = id => {
-        let idx = transactions.findIndex((item) => item.id === id);
+        let idx = transactions.findIndex(item => item.id === id);
         idx !== -1  &&  transactions.splice(idx, 1);
     };
 

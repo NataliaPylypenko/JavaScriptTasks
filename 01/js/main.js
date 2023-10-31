@@ -91,6 +91,9 @@ const transactionService = () => {
 
             // Rerender Transactions
             render();
+
+            // Save To LocalStorage
+            save();
         });
     };
     formSubmissionEvents();
@@ -109,6 +112,9 @@ const transactionService = () => {
 
                 // Rerender Transactions
                 render();
+
+                // Save To LocalStorage
+                save();
             }
         });
     };
@@ -125,15 +131,6 @@ const transactionService = () => {
         });
     };
 
-    const save = () => {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
-    };
-
-    const load = () => {
-        transactions.concat(JSON.parse(localStorage.getItem('transactions')));
-    };
-    load();
-
     const remove = id => {
         let idx = transactions.findIndex(item => item.id === id);
         idx !== -1  &&  transactions.splice(idx, 1);
@@ -142,6 +139,15 @@ const transactionService = () => {
     const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
 
     const findBy = (filterCondition) => TRANSACTION_FILTERS[filterCondition]();
+
+    const save = () => {
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+    };
+
+    const load = () => {
+        transactions.push(...JSON.parse(localStorage.getItem('transactions')));
+    };
+    load();
 
     const render = () => {
         const tableBody = document.querySelector('#history tbody');
@@ -164,6 +170,7 @@ const transactionService = () => {
     return {
         add,
         save,
+        load,
         remove,
         getTotalBalance,
         findBy,
@@ -175,11 +182,3 @@ const transactions = transactionService();
 
 // Render transactions
 transactions.render();
-
-
-
-// console.log('Total Balance', transactions.getTotalBalance());
-// console.log('Filtered Transactions', transactions.findBy(getRandomArrayItem(transactions.FILTER_CONDITION)));
-
-// transactions.save();
-// console.log('Get Transactions', transactions.getAll());

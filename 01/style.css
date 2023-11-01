@@ -81,3 +81,10 @@ body {
     background-color: var(--darknessGray);
     border-color: var(--lightnessGray);
 }
+
+#myChart rect {
+    fill: transparent;
+}
+#myChart text {
+    fill: var(--lightnessGray);;
+}

@@ -22,6 +22,7 @@
 
     Візуалізація даних.
     Додайте можливість побудови графіка зміни балансу з часом.
+
     Це завдання вимагає від вас використання функцій, масивів, обробників подій та роботи з локальним сховищем.
     Також, ви можете використовувати HTML та CSS для створення користувацького інтерфейсу.
 
@@ -41,8 +42,6 @@ const generateUniqueId = (length = 9) => generate(length, 'abcdefghijklmnopqrstu
 
 const formatDate = date => date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
 
-const getRandomArrayItem = array => array[randomInteger(0, array.length - 1)];
-
 /*---------- /additional functions ----------*/
 
 const transactionService = () => {
@@ -58,6 +57,10 @@ const transactionService = () => {
         'utility payments': () => transactions.filter(a => a.category === 'utility payments'),
     };
 
+    /*
+    * Render
+     */
+
     const renderCategorySelect = () => {
         const categorySelect = document.querySelector('#categorySelect');
         let str = '';
@@ -69,6 +72,101 @@ const transactionService = () => {
         categorySelect.innerHTML = str;
     };
     renderCategorySelect();
+
+    const renderTotalBalance = () => {
+        const totalBalance = document.querySelector('#totalBalance');
+        const sum = getTotalBalance();
+        let cl = 'green';
+        if (sum < 0) {
+            cl = 'red';
+        }
+        totalBalance.innerHTML = `<h1 style="color:${cl}">${sum}$</h1>`
+    };
+
+    const loadDrawChart = () => {
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+    };
+
+    const drawChart = () => {
+        const data = google.visualization.arrayToDataTable(generateArr());
+
+        const chart = new google.visualization.PieChart(document.getElementById('myChart'));
+        chart.draw(data);
+    };
+
+    const load = () => {
+        transactions.push(...JSON.parse(localStorage.getItem('transactions')));
+    };
+    load();
+
+    const render = () => {
+        const tableBody = document.querySelector('#history tbody');
+        let str = '';
+
+        transactions.map((transaction, i) => {
+            str += `<tr>
+                        <td>${++i}</td>
+                        <td>${transaction.amount}$</td>
+                        <td>${transaction.date}</td>
+                        <td>${transaction.category}</td>
+                        <td>${transaction.comment}</td>
+                        <td><button type="button" data-id="${transaction.id}" class="btn btn-outline-danger">Remove</button></td>
+                    </tr>`
+        });
+
+        tableBody.innerHTML = str;
+    };
+
+    /*
+    * Functions
+     */
+
+    const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
+
+    const generateArr = () => {
+        const result = [['Category', 'Mhl']];
+        const getTotalBalance = () => transactions.reduce((a, b) => a += Math.abs(b.amount), 0);
+
+        for (let transaction of transactions) {
+            const amount = Math.abs(transaction.amount) / getTotalBalance() * 100;
+            const categoryExists = result.some(item => item[0] === transaction.category);
+
+            if (categoryExists) {
+                const index = result.findIndex(item => item[0] === transaction.category);
+                result[index][1] += amount;
+            } else {
+                result.push([transaction.category, amount]);
+            }
+        }
+
+        return result;
+    };
+
+    const add = (amount, category, comment) => {
+        transactions.push({
+            id: generateUniqueId(),
+            date: formatDate(new Date()),
+            amount: amount,
+            category: category,
+            comment: comment,
+        });
+    };
+
+    const remove = id => {
+        let idx = transactions.findIndex(item => item.id === id);
+        idx !== -1  &&  transactions.splice(idx, 1);
+    };
+
+    const save = () => {
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+    };
+
+    const findBy = (filterCondition) => TRANSACTION_FILTERS[filterCondition]();
+
+    /*
+    * Events
+     */
 
     const formSubmissionEvents = () => {
         const newRecordForm = document.getElementById('newRecordForm');
@@ -96,6 +194,9 @@ const transactionService = () => {
 
             // Save To LocalStorage
             save();
+
+            // Load Diagram
+            loadDrawChart();
         });
     };
     formSubmissionEvents();
@@ -120,71 +221,19 @@ const transactionService = () => {
 
                 // Save To LocalStorage
                 save();
+
+                // Load Diagram
+                loadDrawChart();
             }
         });
     };
     removeItemEvents();
 
-    const renderTotalBalance = () => {
-        const totalBalance = document.querySelector('#totalBalance');
-        const sum = getTotalBalance();
-        let cl = 'green';
-        if (sum < 0) {
-            cl = 'red';
-        }
-        totalBalance.innerHTML = `<h1 style="color:${cl}">${sum}$</h1>`
-    };
-
-
-    const add = (amount, category, comment) => {
-        transactions.push({
-            id: generateUniqueId(),
-            date: formatDate(new Date()),
-            amount: amount,
-            category: category,
-            comment: comment,
-        });
-    };
-
-    const remove = id => {
-        let idx = transactions.findIndex(item => item.id === id);
-        idx !== -1  &&  transactions.splice(idx, 1);
-    };
-
-    const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
-
-    const findBy = (filterCondition) => TRANSACTION_FILTERS[filterCondition]();
-
-    const save = () => {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
-    };
-
-    const load = () => {
-        transactions.push(...JSON.parse(localStorage.getItem('transactions')));
-    };
-    load();
-
-    const render = () => {
-        const tableBody = document.querySelector('#history tbody');
-        let str = '';
-
-        transactions.map((transaction, i) => {
-            str += `<tr>
-                        <td>${++i}</td>
-                        <td>${transaction.amount}$</td>
-                        <td>${transaction.date}</td>
-                        <td>${transaction.category}</td>
-                        <td>${transaction.comment}</td>
-                        <td><button type="button" data-id="${transaction.id}" class="btn btn-outline-danger">Remove</button></td>
-                    </tr>`
-        });
-
-        tableBody.innerHTML = str;
-    };
 
     return {
         renderTotalBalance,
-        render,
+        loadDrawChart,
+        render
     };
 };
 
@@ -193,5 +242,8 @@ const transactions = transactionService();
 // Render Total Balance
 transactions.renderTotalBalance();
 
-// Render transactions
+// Render Transactions
 transactions.render();
+
+// Load Diagram
+transactions.loadDrawChart();

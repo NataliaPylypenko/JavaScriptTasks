@@ -142,7 +142,7 @@ const transactionService = () => {
     };
 
     const load = () => {
-        transactions.push(...JSON.parse(localStorage.getItem('transactions')));
+        localStorage.getItem('transactions') && transactions.push(...JSON.parse(localStorage.getItem('transactions')));
     };
     load();
 

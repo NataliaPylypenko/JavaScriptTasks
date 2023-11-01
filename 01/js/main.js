@@ -58,6 +58,52 @@ const transactionService = () => {
     };
 
     /*
+   * Functions
+    */
+
+    const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
+
+    const generateArr = () => {
+        const result = [['Category', 'Mhl']];
+        const getTotalBalance = () => transactions.reduce((a, b) => a += Math.abs(b.amount), 0);
+
+        for (let transaction of transactions) {
+            const amount = Math.abs(transaction.amount) / getTotalBalance() * 100;
+            const categoryExists = result.some(item => item[0] === transaction.category);
+
+            if (categoryExists) {
+                const index = result.findIndex(item => item[0] === transaction.category);
+                result[index][1] += amount;
+            } else {
+                result.push([transaction.category, amount]);
+            }
+        }
+
+        return result;
+    };
+
+    const add = (amount, category, comment) => {
+        transactions.push({
+            id: generateUniqueId(),
+            date: formatDate(new Date()),
+            amount: amount,
+            category: category,
+            comment: comment,
+        });
+    };
+
+    const remove = id => {
+        let idx = transactions.findIndex(item => item.id === id);
+        idx !== -1  &&  transactions.splice(idx, 1);
+    };
+
+    const save = () => {
+        localStorage.setItem('transactions', JSON.stringify(transactions));
+    };
+
+    const findBy = (filterCondition) => TRANSACTION_FILTERS[filterCondition]();
+
+    /*
     * Render
      */
 
@@ -117,52 +163,6 @@ const transactionService = () => {
 
         tableBody.innerHTML = str;
     };
-
-    /*
-    * Functions
-     */
-
-    const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
-
-    const generateArr = () => {
-        const result = [['Category', 'Mhl']];
-        const getTotalBalance = () => transactions.reduce((a, b) => a += Math.abs(b.amount), 0);
-
-        for (let transaction of transactions) {
-            const amount = Math.abs(transaction.amount) / getTotalBalance() * 100;
-            const categoryExists = result.some(item => item[0] === transaction.category);
-
-            if (categoryExists) {
-                const index = result.findIndex(item => item[0] === transaction.category);
-                result[index][1] += amount;
-            } else {
-                result.push([transaction.category, amount]);
-            }
-        }
-
-        return result;
-    };
-
-    const add = (amount, category, comment) => {
-        transactions.push({
-            id: generateUniqueId(),
-            date: formatDate(new Date()),
-            amount: amount,
-            category: category,
-            comment: comment,
-        });
-    };
-
-    const remove = id => {
-        let idx = transactions.findIndex(item => item.id === id);
-        idx !== -1  &&  transactions.splice(idx, 1);
-    };
-
-    const save = () => {
-        localStorage.setItem('transactions', JSON.stringify(transactions));
-    };
-
-    const findBy = (filterCondition) => TRANSACTION_FILTERS[filterCondition]();
 
     /*
     * Events

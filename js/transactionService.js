@@ -40,7 +40,7 @@ const generate = (keyLength, characters) => [...Array(keyLength)]
 
 const generateUniqueId = (length = 9) => generate(length, 'abcdefghijklmnopqrstuvwxyz0123456789');
 
-const formatDate = date => date.toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+const formatDate = date => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
 /*---------- /additional functions ----------*/
 
@@ -80,6 +80,22 @@ const transactionService = () => {
         }
 
         return result;
+    };
+
+    const generateArrToChart = () => {
+        const result = [];
+
+        for (let transaction of transactions) {}
+
+        return [
+            { date: '1', balance: 1000 },
+            { date: '2', balance: 1100 },
+            { date: '3', balance: 900 },
+            { date: '4', balance: 800 },
+            { date: '5', balance: 1000 },
+            { date: '6', balance: 1300 },
+            { date: '7', balance: 1400 },
+        ];
     };
 
     const add = (amount, category, comment) => {
@@ -129,17 +145,53 @@ const transactionService = () => {
         totalBalance.innerHTML = `<h1 style="color:${cl}">${sum}$</h1>`
     };
 
-    const loadDrawChart = () => {
+    const renderDiagram = () => {
+        const drawChart = () => {
+            const data = google.visualization.arrayToDataTable(generateArr());
+
+            const chart = new google.visualization.PieChart(document.getElementById('myChart'));
+            chart.draw(data);
+        };
+
         google.charts.load('current', {'packages':['corechart']});
         google.charts.setOnLoadCallback(drawChart);
     };
+    renderDiagram();
 
-    const drawChart = () => {
-        const data = google.visualization.arrayToDataTable(generateArr());
+    const renderChart = () => {
+        const ctx = document.getElementById('balanceChart').getContext('2d');
+        const data = generateArrToChart();
 
-        const chart = new google.visualization.PieChart(document.getElementById('myChart'));
-        chart.draw(data);
+        const dates = data.map(item => item.date);
+        const balances = data.map(item => item.balance);
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Costs',
+                    data: balances,
+                    borderColor: '#6ECC39',
+                    fill: false,
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     };
+    renderChart();
 
     const load = () => {
         localStorage.getItem('transactions') && transactions.push(...JSON.parse(localStorage.getItem('transactions')));
@@ -196,7 +248,7 @@ const transactionService = () => {
             save();
 
             // Load Diagram
-            loadDrawChart();
+            renderDiagram();
         });
     };
     formSubmissionEvents();
@@ -223,7 +275,7 @@ const transactionService = () => {
                 save();
 
                 // Load Diagram
-                loadDrawChart();
+                renderDiagram();
             }
         });
     };
@@ -232,7 +284,7 @@ const transactionService = () => {
 
     return {
         renderTotalBalance,
-        loadDrawChart,
+        renderDiagram,
         render
     };
 };
@@ -244,6 +296,3 @@ transactions.renderTotalBalance();
 
 // Render Transactions
 transactions.render();
-
-// Load Diagram
-transactions.loadDrawChart();

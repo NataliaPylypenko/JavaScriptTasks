@@ -85,17 +85,24 @@ const transactionService = () => {
     const generateArrToChart = () => {
         const result = [];
 
-        for (let transaction of transactions) {}
+        transactions.map(transaction => {
+            const amount = transaction.amount < 0 && Math.abs(transaction.amount);
+            const date = transaction.date;
 
-        return [
-            { date: '1', balance: 1000 },
-            { date: '2', balance: 1100 },
-            { date: '3', balance: 900 },
-            { date: '4', balance: 800 },
-            { date: '5', balance: 1000 },
-            { date: '6', balance: 1300 },
-            { date: '7', balance: 1400 },
-        ];
+            const dateExists = result.some(item => item.date === date);
+
+            if (dateExists) {
+                const index = result.findIndex(item => item.date === date);
+                result[index].balance += amount;
+            } else {
+                result.push({
+                    date: date,
+                    balance: amount
+                });
+            }
+        });
+
+        return result;
     };
 
     const add = (amount, category, comment) => {
@@ -122,6 +129,11 @@ const transactionService = () => {
     /*
     * Render
      */
+
+    const load = () => {
+        localStorage.getItem('transactions') && transactions.push(...JSON.parse(localStorage.getItem('transactions')));
+    };
+    load();
 
     const renderCategorySelect = () => {
         const categorySelect = document.querySelector('#categorySelect');
@@ -192,11 +204,6 @@ const transactionService = () => {
         });
     };
     renderChart();
-
-    const load = () => {
-        localStorage.getItem('transactions') && transactions.push(...JSON.parse(localStorage.getItem('transactions')));
-    };
-    load();
 
     const render = () => {
         const tableBody = document.querySelector('#history tbody');
@@ -284,7 +291,6 @@ const transactionService = () => {
 
     return {
         renderTotalBalance,
-        renderDiagram,
         render
     };
 };

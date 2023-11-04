@@ -40,6 +40,19 @@ const transactionsRepository = (tokenizer) => {
     const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
     const getTotalExpenses = () => getExpenses().reduce((a, b) => a += b.amount, 0);
 
+    const transactionsByPeriod = (from, to) => {
+       const result = [];
+        transactions
+            //.filter(transaction => from < transaction.date && transaction.date < to)
+            .forEach(transaction => {
+                let date = formatDate(new Date(transaction.date))
+                !result[date] && (result[date] = 0);
+                result[date] += transaction.amount;
+            });
+
+       return result;
+    }
+
     const add = (amount, category, date, comment) => {
         transactions.push({
             id: tokenizer.generateUniqueId(),
@@ -73,6 +86,7 @@ const transactionsRepository = (tokenizer) => {
         add,
         getTotalBalance,
         getTotalExpenses,
+        transactionsByPeriod,
     }
 };
 
@@ -209,25 +223,41 @@ const historyDiagramComponent = (repository, events) => {
 
 const costScheduleComponent = (repository, events) => {
     const prepareData = () => {
-        const result = [];
 
-        repository.getExpenses().map(transaction => {
-            const date = transaction.date;
-            const dateExists = result.some(item => item.date === date);
-            const amount = Math.abs(transaction.amount)
+        const to = new Date();
+        const from = to.setDate(to.getDate() - 7);
 
-            if (dateExists) {
-                const index = result.findIndex(item => item.date === date);
-                result[index].balance += amount;
-            } else {
-                result.push({
-                    date: formatDate(new Date(date)),
-                    balance: amount
-                });
-            }
+        let amountByDay = 200.
+
+        const days =  ['23.10', '24.10', '25.10','26.10','27.10','28.10','29.10'];
+
+        const transactionsByDay = repository.transactionsByPeriod(from, to)
+
+
+        console.log(transactionsByDay);
+
+
+
+        // repository.getExpenses().map(transaction => {
+        //     const date = transaction.date;
+        //     const dateExists = result.some(item => item.date === date);
+        //     const amount = Math.abs(transaction.amount)
+        //
+        //     if (dateExists) {
+        //         const index = result.findIndex(item => item.date === date);
+        //         result[index].balance += amount;
+        //     } else {
+        //         result.push({
+        //             date: formatDate(new Date(date)),
+        //             balance: amount
+        //         });
+        //     }
+        // });
+
+        return days.map(date => {
+            let balance = amountByDay += transactionsByDay[date] || 0;
+            return {date, balance}
         });
-
-        return result;
     };
 
     events.subscribe('transaction.changed', () => render())

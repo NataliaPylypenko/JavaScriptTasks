@@ -1,20 +1,17 @@
 const eventEmitter = () => {
-   const events = {}
+   const events = {};
     return {
         events,
         subscribe: (eventName, callback) => {
             !events[eventName] && (events[eventName] = []);
             events[eventName].push(callback);
         },
-        unsubscribe: (eventName, callback) => {
-            events[eventName] = events[eventName].filter(eventCallback => callback !== eventCallback);
-        },
         emit: (eventName, args) => {
             const event = events[eventName];
             event && event.forEach(callback => callback.call(null, args));
         }
     };
-}
+};
 
 const tokenizer = () => {
     const randomInteger = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
@@ -35,10 +32,10 @@ const transactionsRepository = (tokenizer) => {
     const transactions = [];
     const load = () => localStorage.getItem('transactions') && transactions.push(...JSON.parse(localStorage.getItem('transactions')));
 
-    const getExpenses = () => transactions.filter(transaction => transaction.amount > 0);
+    const getExpenses = () => transactions.filter(transaction => transaction.amount < 0);
 
     const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
-    const getTotalExpenses = () => getExpenses().reduce((a, b) => a += b.amount, 0);
+    const getTotalExpenses = () => getExpenses().reduce((a, b) => a += Math.abs(b.amount), 0);
 
     const add = (amount, category, date, comment) => {
         transactions.push({
@@ -55,6 +52,8 @@ const transactionsRepository = (tokenizer) => {
     const remove = id => {
         let idx = transactions.findIndex(item => item.id === id);
         idx !== -1  &&  transactions.splice(idx, 1);
+
+        save()
     };
 
     const save = () => {
@@ -78,11 +77,11 @@ const transactionsRepository = (tokenizer) => {
 const transactionService = (repository, events) => {
     const CATEGORIES = ['Salary', 'Transport', 'Food', 'Entertainment', 'Utility Payments'];
 
-    const getCategories = () => CATEGORIES
+    const getCategories = () => CATEGORIES;
 
     const add = (amount, category, date, comment) => {
 
-        if(CATEGORIES.find((item) => category) === undefined){
+        if(CATEGORIES.find((item) => item === category) === undefined){
             throw `Category ${category} is not found!`
         }
 
@@ -91,23 +90,22 @@ const transactionService = (repository, events) => {
             category,
             date || new Date(),
             comment
-        )
+        );
 
-        events.emit('transaction.changed')
+        events.emit('transaction.changed');
         console.log(events)
+    };
 
-    }
+    const remove = id => {
+        repository.remove(id);
 
-
-    const remove = () => {
-        repository.remove();
-        events.emit('transaction.changed')
-
+        events.emit('transaction.changed');
         console.log(events)
-    }
+    };
 
     return {
         add,
+        remove,
         getCategories,
     };
 };
@@ -117,18 +115,16 @@ const totalBalanceComponent = (repository, events) => {
         const totalBalance = document.querySelector('#totalBalance');
         const sum = repository.getTotalBalance();
         let cl = 'green';
-        if (sum < 0) {
-            cl = 'red';
-        }
+        if (sum < 0)  cl = 'red';
         totalBalance.innerHTML = `<h1 style="color:${cl}">${sum}$</h1>`
     };
 
-    events.subscribe('transaction.changed', () => render())
+    events.subscribe('transaction.changed', () => render());
 
     return {
         render
     }
-}
+};
 
 const historyTableComponent = (transactionService, repository, events) => {
     const removeItemEvent = () => {
@@ -153,7 +149,7 @@ const historyTableComponent = (transactionService, repository, events) => {
             str += `<tr>
                         <td>${++i}</td>
                         <td>${transaction.amount}$</td>
-                        <td>${transaction.date}</td>
+                        <td>${formatDate(new Date(transaction.date))}</td>
                         <td>${transaction.category}</td>
                         <td>${transaction.comment}</td>
                         <td><button type="button" data-id="${transaction.id}" class="btn btn-outline-danger">Remove</button></td>
@@ -163,18 +159,17 @@ const historyTableComponent = (transactionService, repository, events) => {
         tableBody.innerHTML = str;
     };
 
-    events.subscribe('transaction.changed', () => render())
-
+    events.subscribe('transaction.changed', () => render());
 
     return {
         render
     }
-}
+};
 
 const historyDiagramComponent = (repository, events) => {
     const prepareData = () => {
         const result = [['Category', 'Mhl']];
-        const totalExpenses = repository.getTotalExpenses()
+        const totalExpenses = repository.getTotalExpenses();
 
         for (let transaction of repository.getExpenses()) {
             const amount = Math.abs(transaction.amount) / totalExpenses * 100;
@@ -188,10 +183,11 @@ const historyDiagramComponent = (repository, events) => {
             }
         }
 
-        events.subscribe('transaction.changed', () => render())
-
+        console.log(result);
         return result;
     };
+
+    events.subscribe('transaction.changed', () => render());
 
     const render = () => {
         const drawChart = () => {
@@ -208,7 +204,7 @@ const historyDiagramComponent = (repository, events) => {
     return {
         render
     }
-}
+};
 
 const costScheduleComponent = (repository, events) => {
     const prepareData = () => {
@@ -233,7 +229,7 @@ const costScheduleComponent = (repository, events) => {
         return result;
     };
 
-    events.subscribe('transaction.changed', () => render())
+    events.subscribe('transaction.changed', () => render());
 
     const render = () => {
         const ctx = document.getElementById('balanceChart').getContext('2d');
@@ -272,9 +268,9 @@ const costScheduleComponent = (repository, events) => {
     return {
         render
     }
-}
+};
 
-const transactionFormComponent = (transactionService, totalBalance) => {
+const transactionFormComponent = (transactionService) => {
     const renderCategorySelect = () => {
         const categorySelect = document.querySelector('#categorySelect');
         let str = '';
@@ -287,8 +283,7 @@ const transactionFormComponent = (transactionService, totalBalance) => {
     };
     renderCategorySelect();
 
-
-    const handle = (transactionService) => {
+    const handle = () => {
         const newRecordForm = document.getElementById('newRecordForm');
         const newRecordBtn = document.getElementById('newRecordBtn');
         newRecordForm.addEventListener('submit', function (e) {
@@ -303,15 +298,16 @@ const transactionFormComponent = (transactionService, totalBalance) => {
 
             transactionService.add(amount, category, null, comment);
         });
-    }
+    };
+
     return {
-        handle: () => handle(transactionService, totalBalance)
+        handle
     }
-}
+};
 
 /*---------- /additional functions ----------*/
-const formatDate = date => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
+const formatDate = date => date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
 /*---------- /additional functions ----------*/
 
@@ -319,19 +315,29 @@ const events = eventEmitter();
 const repository = transactionsRepository(tokenizer());
 const transaction = transactionService(repository, events);
 
-const totalBalance = totalBalanceComponent(repository, events)
-const historyTable = historyTableComponent(transaction, repository, events)
-const historyDiagram = historyDiagramComponent(repository, events)
-const costSchedule = costScheduleComponent(repository, events)
+const totalBalance = totalBalanceComponent(repository, events);
+const historyTable = historyTableComponent(transaction, repository, events);
+const historyDiagram = historyDiagramComponent(repository, events);
+const costSchedule = costScheduleComponent(repository, events);
 
-const transactionForm = transactionFormComponent(transaction, totalBalance)
+const transactionForm = transactionFormComponent(transaction, totalBalance);
+
+totalBalance.render();
+transactionForm.handle();
+historyTable.render();
+historyDiagram.render();
+costSchedule.render();
+
+console.log(events);
 
 
-totalBalance.render()
-transactionForm.handle()
-historyTable.render()
-historyDiagram.render()
-costSchedule.render()
-
-console.log(events)
+// transactions = [
+//     {id: "x9avql5ap", date: "2023-11-04T06:16:10.090Z", amount: 3500, category: "Salary", comment: ""},
+//     {id: "pxdhihemr", date: "2023-11-04T06:16:10.090Z", amount: -350, category: "Food", comment: ""},
+//     {id: "ywrdw80fa", date: "2023-11-04T06:16:10.090Z", amount: -60, category: "Transport", comment: ""},
+//     {id: "ql5apx9av", date: "2023-11-04T06:16:10.090Z", amount: -8500, category: "Utility Payments", comment: ""},
+//     {id: "ihemrpxdh", date: "2023-11-04T06:16:10.090Z", amount: -650, category: "Food", comment: ""},
+//     {id: "w80faywrd", date: "2023-11-04T06:16:10.090Z", amount: -40, category: "Food", comment: "coffee"},
+// ];
+// localStorage.setItem('transactions', transactions);
 

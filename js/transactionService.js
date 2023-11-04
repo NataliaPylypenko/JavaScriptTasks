@@ -55,6 +55,7 @@ const transactionsRepository = (tokenizer) => {
     const remove = id => {
         let idx = transactions.findIndex(item => item.id === id);
         idx !== -1  &&  transactions.splice(idx, 1);
+        save();
     };
 
     const save = () => {
@@ -94,20 +95,16 @@ const transactionService = (repository, events) => {
         )
 
         events.emit('transaction.changed')
-        console.log(events)
-
     }
 
-
-    const remove = () => {
-        repository.remove();
+    const remove = (id) => {
+        repository.remove(id);
         events.emit('transaction.changed')
-
-        console.log(events)
     }
 
     return {
         add,
+        remove,
         getCategories,
     };
 };

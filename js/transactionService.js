@@ -223,36 +223,13 @@ const historyDiagramComponent = (repository, events) => {
 
 const costScheduleComponent = (repository, events) => {
     const prepareData = () => {
-
         const to = new Date();
         const from = to.setDate(to.getDate() - 7);
-
         let amountByDay = 200.
 
         const days =  ['23.10', '24.10', '25.10','26.10','27.10','28.10','29.10'];
 
         const transactionsByDay = repository.transactionsByPeriod(from, to)
-
-
-        console.log(transactionsByDay);
-
-
-
-        // repository.getExpenses().map(transaction => {
-        //     const date = transaction.date;
-        //     const dateExists = result.some(item => item.date === date);
-        //     const amount = Math.abs(transaction.amount)
-        //
-        //     if (dateExists) {
-        //         const index = result.findIndex(item => item.date === date);
-        //         result[index].balance += amount;
-        //     } else {
-        //         result.push({
-        //             date: formatDate(new Date(date)),
-        //             balance: amount
-        //         });
-        //     }
-        // });
 
         return days.map(date => {
             let balance = amountByDay += transactionsByDay[date] || 0;

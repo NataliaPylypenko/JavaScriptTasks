@@ -1,43 +1,5 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-:root {
-    /* Main color */
-    --danger: #C71254;
-    --warning: #F0C20C;
-    --success: #6ECC39;
-    --primary: #0D47A1;
-
-    /* Neutral Color */
-    --black: #000;
-    --darknessGray: #141414; /* button */
-    --darkGray: #161f27; /* wrapper */
-    --gray: #202b38;  /* body */
-    --lightGray: #444857; /* input */
-    --lightnessGray: #BBB; /* text */
-    --white: #FFF;
-}
-
-body {
-    font-family: 'Josefin Sans', sans-serif;
-    font-size: 14px;
-    line-height: 1.2;
-    font-weight: 400;
-    padding: 60px 0;
-    color: var(--lightnessGray);
-    background-color: var(--gray);
-}
 
 /*--------------------- /General ---------------------*/
-
-.container {
-    width: 100%;
-    max-width: 670px;
-    margin: 0 auto 60px;
-}
 
 .h1 {
     color: var(--white);

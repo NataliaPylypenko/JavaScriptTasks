@@ -37,6 +37,42 @@ const transactionsRepository = (tokenizer) => {
     const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
     const getTotalExpenses = () => getExpenses().reduce((a, b) => a += Math.abs(b.amount), 0);
 
+    const transactionsByPeriod = (from) => {
+        let result = [];
+        let resultSevenDays = [];
+        let flag = false;
+
+        transactions.map(transaction => {
+                let a = new Date(transaction.date);
+                if (from === formatDate(a)) {
+                    flag = true;
+                }
+                if (flag) {
+                    resultSevenDays.push(transaction);
+                }
+            });
+
+        resultSevenDays.map(day => {
+            let date = day.date;
+            let fDate = formatDate(new Date(day.date));
+
+            const dateExists = result.some(item => item.date === fDate);
+            const amount = Math.abs(day.amount);
+
+            if (dateExists) {
+                const index = result.findIndex(item => item.date === fDate);
+                result[index].balance += amount;
+            } else {
+                result.push({
+                    date: formatDate(new Date(date)),
+                    balance: amount
+                });
+            }
+        });
+
+        return result;
+    };
+
     const add = (amount, category, date, comment) => {
         transactions.push({
             id: tokenizer.generateUniqueId(),
@@ -57,6 +93,18 @@ const transactionsRepository = (tokenizer) => {
     };
 
     const save = () => {
+        // const transactions = [
+        //     {id: "x9avql5ap", date: "2023-10-28T06:16:10.090Z", amount: 25000, category: "Salary", comment: ""},
+        //     {id: "pxdhihemr", date: "2023-10-28T06:16:10.090Z", amount: -350, category: "Food", comment: ""},
+        //     {id: "ywrdw80fa", date: "2023-10-29T06:16:10.090Z", amount: -60, category: "Transport", comment: ""},
+        //     {id: "ql5apx9av", date: "2023-10-30T06:16:10.090Z", amount: -8500, category: "Utility Payments", comment: ""},
+        //     {id: "ihemrpxdh", date: "2023-10-31T06:16:10.090Z", amount: -650, category: "Food", comment: ""},
+        //     {id: "w80faywrd", date: "2023-11-01T06:16:10.090Z", amount: -40, category: "Food", comment: "coffee"},
+        //     {id: "mk1plr3xo", date: "2023-11-02T15:00:51.947Z", amount: -60, category: "Transport", comment: ""},
+        //     {id: "vls7210rk", date: "2023-11-03T15:04:26.970Z", amount: -500, category: "Entertainment", comment: ""},
+        //     {id: "m9ynvqhwf", date: "2023-11-03T15:04:48.305Z", amount: -60, category: "Transport", comment: ""},
+        //     {id: "g06uoixxk", date: "2023-11-04T15:07:42.121Z", amount: -350, category: "Food", comment: ""},
+        // ];
         localStorage.setItem('transactions', JSON.stringify(transactions));
     };
 
@@ -71,6 +119,7 @@ const transactionsRepository = (tokenizer) => {
         add,
         getTotalBalance,
         getTotalExpenses,
+        transactionsByPeriod
     }
 };
 
@@ -80,7 +129,6 @@ const transactionService = (repository, events) => {
     const getCategories = () => CATEGORIES;
 
     const add = (amount, category, date, comment) => {
-
         if(CATEGORIES.find((item) => item === category) === undefined){
             throw `Category ${category} is not found!`
         }
@@ -93,14 +141,11 @@ const transactionService = (repository, events) => {
         );
 
         events.emit('transaction.changed');
-        console.log(events)
     };
 
     const remove = id => {
         repository.remove(id);
-
         events.emit('transaction.changed');
-        console.log(events)
     };
 
     return {
@@ -183,7 +228,6 @@ const historyDiagramComponent = (repository, events) => {
             }
         }
 
-        console.log(result);
         return result;
     };
 
@@ -208,25 +252,19 @@ const historyDiagramComponent = (repository, events) => {
 
 const costScheduleComponent = (repository, events) => {
     const prepareData = () => {
-        const result = [];
+        const currentDate = new Date();
+        const sevenDaysAgo = new Date(currentDate);
+        sevenDaysAgo.setDate(currentDate.getDate() - 7);
+        const from = formatDate(sevenDaysAgo);
 
-        repository.getExpenses().map(transaction => {
-            const date = transaction.date;
-            const dateExists = result.some(item => item.date === date);
-            const amount = Math.abs(transaction.amount)
+        let coord = repository.transactionsByPeriod(from);
+        const dates = coord.map(item => item.date);
+        const balances = coord.map(item => item.balance);
 
-            if (dateExists) {
-                const index = result.findIndex(item => item.date === date);
-                result[index].balance += amount;
-            } else {
-                result.push({
-                    date: formatDate(new Date(date)),
-                    balance: amount
-                });
-            }
-        });
-
-        return result;
+        return {
+            dates,
+            balances
+        }
     };
 
     events.subscribe('transaction.changed', () => render());
@@ -235,8 +273,8 @@ const costScheduleComponent = (repository, events) => {
         const ctx = document.getElementById('balanceChart').getContext('2d');
         const data = prepareData();
 
-        const dates = data.map(item => item.date);
-        const balances = data.map(item => item.balance);
+        const dates = data.dates;
+        const balances = data.balances;
 
         new Chart(ctx, {
             type: 'line',
@@ -328,16 +366,4 @@ historyTable.render();
 historyDiagram.render();
 costSchedule.render();
 
-console.log(events);
-
-
-// transactions = [
-//     {id: "x9avql5ap", date: "2023-11-04T06:16:10.090Z", amount: 3500, category: "Salary", comment: ""},
-//     {id: "pxdhihemr", date: "2023-11-04T06:16:10.090Z", amount: -350, category: "Food", comment: ""},
-//     {id: "ywrdw80fa", date: "2023-11-04T06:16:10.090Z", amount: -60, category: "Transport", comment: ""},
-//     {id: "ql5apx9av", date: "2023-11-04T06:16:10.090Z", amount: -8500, category: "Utility Payments", comment: ""},
-//     {id: "ihemrpxdh", date: "2023-11-04T06:16:10.090Z", amount: -650, category: "Food", comment: ""},
-//     {id: "w80faywrd", date: "2023-11-04T06:16:10.090Z", amount: -40, category: "Food", comment: "coffee"},
-// ];
-// localStorage.setItem('transactions', transactions);
-
+// console.log(events);

@@ -46,24 +46,17 @@ class FeedbackForm {
 
     collectData() {
         const data = [];
-        const feedbackForm = document.querySelector('#feedbackForm');
 
-        feedbackForm.addEventListener('submit', function (e) {
-            e.preventDefault();
+        let name = document.getElementById('name').value;
+        let email = document.getElementById('email').value;
+        let subject = document.getElementById('subject').value;
+        let comment = document.getElementById('comment').value;
 
-            let name = document.getElementById('name').value;
-            let email = document.getElementById('email').value;
-            let subject = document.getElementById('subject').value;
-            let comment = document.getElementById('comment').value;
-
-            data.push({
-                name: name,
-                email: email,
-                subject: subject,
-                comment: comment,
-            });
-
-            feedbackForm.reset();
+        data.push({
+            name: name,
+            email: email,
+            subject: subject,
+            comment: comment,
         });
 
         return data;
@@ -71,17 +64,34 @@ class FeedbackForm {
 }
 
 class FormValidator {
-    validate(data) {}
+    validate(data) {
+        return data;
+    }
 }
 
 class FeedbackProcessor {
     process(data) {
-        localStorage.setItem('formData', JSON.stringify(data));
+        localStorage.setItem('collectData', JSON.stringify(data));
     }
 }
 
 const feedbackForm = new FeedbackForm();
-
 feedbackForm.render();
-console.log(feedbackForm.collectData());
+
+const formValidator = new FormValidator();
+const feedbackProcessor = new FeedbackProcessor();
+
+const form = document.querySelector('#feedbackForm');
+form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const collectData = feedbackForm.collectData();
+    console.log(collectData);
+
+    formValidator.validate(collectData);
+    feedbackProcessor.process(collectData);
+
+    form.reset();
+});
+
 

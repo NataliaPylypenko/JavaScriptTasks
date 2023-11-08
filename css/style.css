@@ -36,3 +36,42 @@ body {
     max-width: 670px;
     margin: 0 auto 60px;
 }
+
+.h1 {
+    color: var(--white);
+    text-align: center;
+}
+
+.h3 {
+    color: var(--white);
+    margin-bottom: 20px;
+}
+
+.wrapper {
+    padding: 25px;
+    border-radius: 16px;
+    background-color: var(--darkGray);
+}
+
+
+/* Form */
+
+.form-control,
+.form-control:focus,
+.form-control::placeholder,
+.form-select,
+.form-select:focus {
+    color: var(--lightnessGray);
+    background-color: var(--lightGray);
+    border: none;
+    box-shadow: none;
+}
+
+.form-check-input:focus {
+    border-color: var(--lightnessGray);
+    box-shadow: none;
+}
+.form-check-input:checked {
+    background-color: var(--darknessGray);
+    border-color: var(--lightnessGray);
+}

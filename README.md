@@ -1,10 +1,10 @@
 * [Financial management system](https://nataliapylypenko.github.io/TasksFromGPT/pages/transactionService.html)
-* [Feedback form processing and validation system](https://nataliapylypenko.github.io/TasksFromGPT/pages/processingAndValidationSystem.html)
+* [Feedback form](https://nataliapylypenko.github.io/TasksFromGPT/pages/feedbackForm.html)
 
 
 <h1>Financial management system</h1>
 
-# Завдання: Система управління фінансами
+# Завдання:
 Вам потрібно створити систему управління фінансами, використовуючи JavaScript функції.
 Ваша програма повинна мати наступні можливості:
 

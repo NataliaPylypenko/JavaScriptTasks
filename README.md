@@ -1,5 +1,5 @@
-* [Financial management system](https://nataliapylypenko.github.io/TasksFromGPT/transactionService.html)
-* [Feedback form processing and validation system](https://nataliapylypenko.github.io/TasksFromGPT/processingAndValidationSystem.html)
+* [Financial management system](https://nataliapylypenko.github.io/TasksFromGPT/pages/transactionService.html)
+* [Feedback form processing and validation system](https://nataliapylypenko.github.io/TasksFromGPT/pages/processingAndValidationSystem.html)
 
 
 <h1>Financial management system</h1>

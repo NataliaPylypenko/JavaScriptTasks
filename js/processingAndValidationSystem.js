@@ -1,22 +1,3 @@
-/*
-    Розробити систему обробки та валідації форми зворотного зв'язку на JavaScript, використовуючи
-    об'єктно-орієнтовані класи. Форма повинна включати поля для імені, електронної пошти, теми повідомлення
-    та тексту повідомлення. Потрібно перевірити, що жодне з полів не є порожнім, що електронна адреса має
-    вірний формат, а текст повідомлення містить щонайменше 20 символів.
-
-    Клас FeedbackForm:
-    Має метод render(), який відображає форму в HTML.
-    Містить метод collectData(), який збирає та повертає дані з форми.
-
-    Клас FormValidator:
-    Відповідає за валідацію даних, зібраних з форми.
-    Має метод validate(data), який перевіряє валідність даних та повертає об'єкт із помилками валідації.
-
-    Клас FeedbackProcessor:
-    Відповідає за обробку даних форми після того, як вони пройшли валідацію.
-    Має метод process(data), який може, наприклад, відправляти дані на сервер або зберігати їх у локальній базі даних.
- */
-
 class FeedbackForm {
     render() {
         const feedbackForm = document.querySelector('#feedbackForm');
@@ -92,7 +73,13 @@ class FormValidator {
 
 class FeedbackProcessor {
     process(data) {
-        localStorage.setItem('collectData', JSON.stringify(data));
+        let collectData;
+        collectData = localStorage.getItem('collectData')
+            ? JSON.parse(localStorage.getItem('collectData'))
+            : [];
+        collectData.push(data);
+
+        localStorage.setItem('collectData', JSON.stringify(collectData));
     }
 }
 

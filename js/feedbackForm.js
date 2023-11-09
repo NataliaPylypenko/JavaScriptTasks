@@ -26,10 +26,10 @@ class FeedbackForm {
     }
 
     collectData() {
-        let name = document.getElementById('name').value;
-        let email = document.getElementById('email').value;
-        let subject = document.getElementById('subject').value;
-        let comment = document.getElementById('comment').value;
+        let name = document.querySelector('#name').value;
+        let email = document.querySelector('#email').value;
+        let subject = document.querySelector('#subject').value;
+        let comment = document.querySelector('#comment').value;
 
         return {
             name,
@@ -58,8 +58,8 @@ class FormValidator {
             validationErrors.subject = 'Subject is a required field!';
         }
 
-        if (data.message && data.message.trim().length <= 20) {
-            validationErrors.message = 'The text of the message must contain at least 20 characters!';
+        if (!data.comment || data.comment.trim().length <= 20) {
+            validationErrors.comment = 'The text of the message must contain at least 20 characters!';
         }
 
         return validationErrors;
@@ -94,10 +94,8 @@ form.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const collectData = feedbackForm.collectData();
-    console.log(collectData);
 
     const validationErrors = formValidator.validate(collectData);
-    console.log(validationErrors);
 
     if(Object.keys(validationErrors).length === 0) {
         feedbackProcessor.process(collectData);

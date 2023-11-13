@@ -38,18 +38,14 @@ const transactionsRepository = (tokenizer) => {
     const getTotalExpenses = () => getExpenses().reduce((a, b) => a += Math.abs(b.amount), 0);
 
     const transactionsByPeriod = (arrayDates) => {
-        // console.log(arrayDates);
         let result = [];
 
         arrayDates.forEach(date => {
             let balance = 0;
 
-            let transactionsForDate = transactions.filter(transaction => formatDate(new Date(transaction.date)) === date);
-            // console.log(transactionsForDate);
+            let transactionsForDate = transactions.filter(transaction => formatDate(new Date(transaction.date)) === date && transaction.amount < 0);
 
-            transactionsForDate.forEach(transaction => {
-                transaction.amount < 0 ? balance += Math.abs(transaction.amount) : balance;
-            });
+            transactionsForDate.forEach(transaction => balance += Math.abs(transaction.amount));
 
             result.push({
                 date: date,
@@ -252,25 +248,19 @@ const costScheduleComponent = (repository, events) => {
     const prepareData = () => {
         const arrayDates = getArrayDates();
 
-        let coord = repository.transactionsByPeriod(arrayDates);
-
-        const dates = coord.map(item => item.date);
-        const balances = coord.map(item => item.balance);
-
-        return {
-            dates,
-            balances
-        }
+        return repository.transactionsByPeriod(arrayDates);
     };
 
     events.subscribe('transaction.changed', () => render());
 
     const render = () => {
         const ctx = document.getElementById('balanceChart').getContext('2d');
-        const data = prepareData();
+        // const data = prepareData();
 
-        const dates = data.dates;
-        const balances = data.balances;
+        const coords = prepareData();
+
+        const dates = coords.map(item => item.date);
+        const balances = coords.map(item => item.balance);
 
         new Chart(ctx, {
             type: 'line',

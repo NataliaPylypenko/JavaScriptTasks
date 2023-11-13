@@ -234,19 +234,13 @@ const historyDiagramComponent = (repository, events) => {
 };
 
 const costScheduleComponent = (repository, events) => {
-    const getArrayDates = () => {
+    const prepareData = () => {
         const currentDate = new Date();
         const arrayDates = [];
 
         for (let i = 0; i < 7; i++) {
             arrayDates.unshift(formatDate(new Date(currentDate - i * 24 * 60 * 60 * 1000)));
         }
-
-        return arrayDates;
-    };
-
-    const prepareData = () => {
-        const arrayDates = getArrayDates();
 
         return repository.transactionsByPeriod(arrayDates);
     };
@@ -255,8 +249,6 @@ const costScheduleComponent = (repository, events) => {
 
     const render = () => {
         const ctx = document.getElementById('balanceChart').getContext('2d');
-        // const data = prepareData();
-
         const coords = prepareData();
 
         const dates = coords.map(item => item.date);

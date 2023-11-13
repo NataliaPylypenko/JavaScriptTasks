@@ -37,37 +37,24 @@ const transactionsRepository = (tokenizer) => {
     const getTotalBalance = () => transactions.reduce((a, b) => a += b.amount, 0);
     const getTotalExpenses = () => getExpenses().reduce((a, b) => a += Math.abs(b.amount), 0);
 
-    const transactionsByPeriod = (from) => {
+    const transactionsByPeriod = (arrayDates) => {
+        // console.log(arrayDates);
         let result = [];
-        let resultSevenDays = [];
-        let flag = false;
 
-        transactions.map(transaction => {
-                let a = new Date(transaction.date);
-                if (from === formatDate(a)) {
-                    flag = true;
-                }
-                if (flag) {
-                    resultSevenDays.push(transaction);
-                }
+        arrayDates.forEach(date => {
+            let balance = 0;
+
+            let transactionsForDate = transactions.filter(transaction => formatDate(new Date(transaction.date)) === date);
+            // console.log(transactionsForDate);
+
+            transactionsForDate.forEach(transaction => {
+                transaction.amount < 0 ? balance += Math.abs(transaction.amount) : balance;
             });
 
-        resultSevenDays.map(day => {
-            let date = day.date;
-            let fDate = formatDate(new Date(day.date));
-
-            const dateExists = result.some(item => item.date === fDate);
-            const amount = Math.abs(day.amount);
-
-            if (dateExists) {
-                const index = result.findIndex(item => item.date === fDate);
-                result[index].balance += amount;
-            } else {
-                result.push({
-                    date: formatDate(new Date(date)),
-                    balance: amount
-                });
-            }
+            result.push({
+                date: date,
+                balance: balance
+            });
         });
 
         return result;
@@ -251,13 +238,22 @@ const historyDiagramComponent = (repository, events) => {
 };
 
 const costScheduleComponent = (repository, events) => {
-    const prepareData = () => {
+    const getArrayDates = () => {
         const currentDate = new Date();
-        const sevenDaysAgo = new Date(currentDate);
-        sevenDaysAgo.setDate(currentDate.getDate() - 7);
-        const from = formatDate(sevenDaysAgo);
+        const arrayDates = [];
 
-        let coord = repository.transactionsByPeriod(from);
+        for (let i = 0; i < 7; i++) {
+            arrayDates.unshift(formatDate(new Date(currentDate - i * 24 * 60 * 60 * 1000)));
+        }
+
+        return arrayDates;
+    };
+
+    const prepareData = () => {
+        const arrayDates = getArrayDates();
+
+        let coord = repository.transactionsByPeriod(arrayDates);
+
         const dates = coord.map(item => item.date);
         const balances = coord.map(item => item.balance);
 
@@ -323,7 +319,7 @@ const transactionFormComponent = (transactionService) => {
 
     const handle = () => {
         const newRecordForm = document.getElementById('newRecordForm');
-        const newRecordBtn = document.getElementById('newRecordBtn');
+
         newRecordForm.addEventListener('submit', function (e) {
             e.preventDefault();
 

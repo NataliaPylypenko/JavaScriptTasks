@@ -41,15 +41,11 @@ const transactionsRepository = (tokenizer) => {
         let result = [];
 
         arrayDates.forEach(date => {
-            let balance = 0;
-
-            let transactionsForDate = transactions.filter(transaction => formatDate(new Date(transaction.date)) === date && transaction.amount < 0);
-
-            transactionsForDate.forEach(transaction => balance += Math.abs(transaction.amount));
-
             result.push({
-                date: date,
-                balance: balance
+                date,
+                balance: transactions
+                    .filter(transaction => formatDate(new Date(transaction.date)) === date && transaction.amount < 0)
+                    .reduce((balance, transaction) => balance + Math.abs(transaction.amount), 0)
             });
         });
 

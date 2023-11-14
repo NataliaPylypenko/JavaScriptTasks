@@ -24,27 +24,38 @@ class WeatherApp {
     }
 
     async getWeather(city) {
-        try {
-            const response = await fetch(`${this.apiUrl}?q=${city}&appid=${this.apiKey}`);
-            const data = await response.json();
-
-            this.ui.displayWeather(data);
-        } catch (error) {
-            this.ui.displayError('Помилка при отриманні погоди');
-        }
+        fetch(`${this.apiUrl}?q=${city}&units=metric&appid=${this.apiKey}`)
+            .then(response => response.json())
+            .then(data => this.ui.displayWeather(data))
+            .catch(error => this.ui.displayError('Error getting weather'));
     }
 }
 
 class UI {
     displayWeather(data) {
+        console.log(data);
         const display = document.querySelector('#display');
+        let iconcode = data.weather[0].icon;
+        let iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
 
         return display.innerHTML = `
-            <h2>${data.name}</h2>
-            <h1>${data.main.temp}</h1>
+            <div class="cardBodyWeather">
+                <span class="weatherCity">${data.name}, ${data.sys.country}</span>
+                <span class="weatherTemperature">t: ${data.main.temp} &#176;C</span>
+                
+                <div class="weather">
+                    <img class="weatherIcon" src="${iconurl}">
+                    <span class="weatherDescr">${data.weather[0].description}</span>
+                </div>
+                <div class="weatherWind">
+                    <span class="weatherWindSpeed">wind speed: ${data.wind.speed}</span>
+                </div>
+                <div class="weatherMinMax">
+                    <p>min: ${data.main.temp_min}</p>
+                    <p>max: ${data.main.temp_max}</p>
+                </div> 
+            </div>
         `;
-
-        // console.log(data);
     }
 
     displayError(message) {

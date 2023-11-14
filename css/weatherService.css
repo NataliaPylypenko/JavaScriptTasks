@@ -1,0 +1,16 @@
+.search-container {
+    display: flex;
+}
+
+.search-container button {
+    padding: 6px 10px;
+    background: var(--lightGray);
+    color: var(--lightnessGray);
+    border: none;
+    border-radius: 0 6px 6px 0;
+    cursor: pointer;
+}
+
+.search-container input {
+    border-radius: 6px 0 0 6px;
+}

@@ -1,4 +1,22 @@
+.main {
+    padding-top: 86px;
+}
+.topnav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+}
+.topnav .wrapper {
+    border-radius: 0;
+}
+
 .search-container {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-form {
     display: flex;
 }
 

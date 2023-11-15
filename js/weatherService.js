@@ -16,11 +16,20 @@ class SearchForm {
 }
 
 class User {
-    userLocation() {
-        navigator.geolocation.getCurrentPosition(position => {
-            console.log(`lat=${position.coords.latitude}&lon=${position.coords.longitude}`);
-            return `lat=${position.coords.latitude}&lon=${position.coords.longitude}`;
-        });
+    getUserLocation() {
+        return new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(position => {
+                    const locationData = {
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude
+                    };
+                resolve(locationData);
+            },
+            error => {
+                console.error('Error getting user location:', error);
+                reject(error);
+            });
+        })
     }
 }
 
@@ -33,12 +42,32 @@ class WeatherApp {
     }
 
     async getWeather(data) {
-        console.log(data);
-
         fetch(`${this.API_URL}?${data}&units=metric&appid=${this.API_KEY_WEATHER}`)
             .then(response => response.json())
             .then(data => this.ui.displayWeather(data))
             .catch(error => this.ui.displayError('Error getting weather'));
+    }
+
+    loadPage() {
+        user.getUserLocation()
+            .then(locationData => {
+                const data = `lat=${locationData.lat}&lon=${locationData.lon}`;
+                weatherApp.getWeather(data);
+            })
+            .catch(error => {
+                console.error('Error getting user location:', error);
+            });
+    }
+
+    changeCity() {
+        searchForm.form.addEventListener('submit', e => {
+            e.preventDefault();
+
+            const data = searchForm.collectData();
+            weatherApp.getWeather(data);
+
+            searchForm.form.reset();
+        });
     }
 }
 
@@ -78,18 +107,5 @@ const weatherApp = new WeatherApp();
 const user = new User();
 
 searchForm.render();
-user.userLocation();
-
-// load
-const data = user.userLocation();
-weatherApp.getWeather(data);
-
-// submit
-searchForm.form.addEventListener('submit', e => {
-    e.preventDefault();
-
-    const data = searchForm.collectData();
-    weatherApp.getWeather(data);
-
-    searchForm.form.reset();
-});
+weatherApp.loadPage();
+weatherApp.changeCity();

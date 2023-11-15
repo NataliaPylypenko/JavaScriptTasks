@@ -1,15 +1,26 @@
 class SearchForm {
-    render() {
-        const form = document.querySelector('#searchForm');
+    constructor () {
+        this.form = document.querySelector('#searchForm');
+    }
 
-        return form.innerHTML = `
+    render() {
+        return this.form.innerHTML = `
             <input type="text" class="form-control" id="city" placeholder="Enter your city..." name="city">
             <button type="submit" id="submitButton"><i class="fa fa-search"></i></button>
         `;
     }
 
     collectData() {
-        return document.querySelector('#city').value;
+        return `q=${document.querySelector('#city').value}`;
+    }
+}
+
+class User {
+    userLocation() {
+        navigator.geolocation.getCurrentPosition(position => {
+            console.log(`lat=${position.coords.latitude}&lon=${position.coords.longitude}`);
+            return `lat=${position.coords.latitude}&lon=${position.coords.longitude}`;
+        });
     }
 }
 
@@ -19,12 +30,12 @@ class WeatherApp {
 
     constructor() {
         this.ui = new UI();
-        this.apiKey = this.API_KEY_WEATHER;
-        this.apiUrl = this.API_URL;
     }
 
-    async getWeather(city) {
-        fetch(`${this.apiUrl}?q=${city}&units=metric&appid=${this.apiKey}`)
+    async getWeather(data) {
+        console.log(data);
+
+        fetch(`${this.API_URL}?${data}&units=metric&appid=${this.API_KEY_WEATHER}`)
             .then(response => response.json())
             .then(data => this.ui.displayWeather(data))
             .catch(error => this.ui.displayError('Error getting weather'));
@@ -33,7 +44,6 @@ class WeatherApp {
 
 class UI {
     displayWeather(data) {
-        console.log(data);
         const display = document.querySelector('#display');
         let iconcode = data.weather[0].icon;
         let iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
@@ -63,26 +73,23 @@ class UI {
     }
 }
 
-class FormValidator {
-    validate(data) {}
-}
-
-class SearchProcessor {
-    process(data) {}
-}
-
 const searchForm = new SearchForm();
-searchForm.render();
-
 const weatherApp = new WeatherApp();
+const user = new User();
 
-const form = document.querySelector('#searchForm');
-form.addEventListener('submit', (e) => {
+searchForm.render();
+user.userLocation();
+
+// load
+const data = user.userLocation();
+weatherApp.getWeather(data);
+
+// submit
+searchForm.form.addEventListener('submit', e => {
     e.preventDefault();
 
-    const city = searchForm.collectData();
+    const data = searchForm.collectData();
+    weatherApp.getWeather(data);
 
-    weatherApp.getWeather(city);
-
-    form.reset();
+    searchForm.form.reset();
 });

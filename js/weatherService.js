@@ -6,12 +6,19 @@ class SearchForm {
     render() {
         return this.form.innerHTML = `
             <input type="text" class="form-control" id="city" placeholder="Enter your city..." name="city">
+            <select class="form-select" id="unitSelect">
+                <option value="metric">Celsius</option>
+                <option value="imperial">Fahrenheit</option>
+            </select>
             <button type="submit" id="submitButton"><i class="fa fa-search"></i></button>
         `;
     }
 
     collectData() {
-        return `q=${document.querySelector('#city').value}`;
+        let q = document.querySelector('#city').value;
+        let units = document.querySelector('#unitSelect').value;
+        q = q.trim() !== '' ? q : 'Kyiv';
+        return `q=${q}&units=${units}`;
     }
 }
 
@@ -42,7 +49,7 @@ class WeatherApp {
     }
 
     async getWeather(data) {
-        fetch(`${this.API_URL}?${data}&units=metric&appid=${this.API_KEY_WEATHER}`)
+        fetch(`${this.API_URL}?${data}&appid=${this.API_KEY_WEATHER}`)
             .then(response => response.json())
             .then(data => this.ui.displayWeather(data))
             .catch(error => this.ui.displayError('Error getting weather'));
@@ -51,7 +58,7 @@ class WeatherApp {
     loadPage() {
         user.getUserLocation()
             .then(locationData => {
-                const data = `lat=${locationData.lat}&lon=${locationData.lon}`;
+                const data = `lat=${locationData.lat}&lon=${locationData.lon}&units=metric`;
                 weatherApp.getWeather(data);
             })
             .catch(error => {

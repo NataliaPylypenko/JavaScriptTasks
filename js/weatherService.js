@@ -18,7 +18,11 @@ class SearchForm {
         let q = document.querySelector('#city').value;
         let units = document.querySelector('#unitSelect').value;
         q = q.trim() !== '' ? q : 'Kyiv';
-        return `q=${q}&units=${units}`;
+        return {
+            str: `q=${q}&units=${units}`,
+            units
+        }
+
     }
 }
 
@@ -48,17 +52,20 @@ class WeatherApp {
         this.ui = new UI();
     }
 
-    async getWeather(data) {
-        fetch(`${this.API_URL}?${data}&appid=${this.API_KEY_WEATHER}`)
+    async getWeather(params) {
+        fetch(`${this.API_URL}?${params.str}&appid=${this.API_KEY_WEATHER}`)
             .then(response => response.json())
-            .then(data => this.ui.displayWeather(data))
+            .then(data => this.ui.displayWeather(data, params.units))
             .catch(error => this.ui.displayError('Error getting weather'));
     }
 
     loadPage() {
         user.getUserLocation()
             .then(locationData => {
-                const data = `lat=${locationData.lat}&lon=${locationData.lon}&units=metric`;
+                const data = {
+                    str: `lat=${locationData.lat}&lon=${locationData.lon}&units=metric`,
+                    units: 'metric'
+                };
                 weatherApp.getWeather(data);
             })
             .catch(error => {
@@ -66,7 +73,7 @@ class WeatherApp {
             });
     }
 
-    changeCity() {
+    changeParameters() {
         searchForm.form.addEventListener('submit', e => {
             e.preventDefault();
 
@@ -79,15 +86,16 @@ class WeatherApp {
 }
 
 class UI {
-    displayWeather(data) {
+    displayWeather(data, units) {
         const display = document.querySelector('#display');
         let iconcode = data.weather[0].icon;
         let iconurl = "http://openweathermap.org/img/w/" + iconcode + ".png";
+        let zn = units === 'metric' ? 'C' : 'F';
 
         return display.innerHTML = `
             <div class="cardBodyWeather">
                 <span class="weatherCity">${data.name}, ${data.sys.country}</span>
-                <span class="weatherTemperature">t: ${data.main.temp} &#176;C</span>
+                <span class="weatherTemperature">t: ${data.main.temp} &#176;${zn}</span>
                 
                 <div class="weather">
                     <img class="weatherIcon" src="${iconurl}">
@@ -115,4 +123,4 @@ const user = new User();
 
 searchForm.render();
 weatherApp.loadPage();
-weatherApp.changeCity();
+weatherApp.changeParameters();

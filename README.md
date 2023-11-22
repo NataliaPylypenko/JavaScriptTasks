@@ -1,7 +1,13 @@
+* [Tasks From GPT](https://nataliapylypenko.github.io/TasksFromGPT/)
+
+***
+
 * [Financial management system](https://nataliapylypenko.github.io/TasksFromGPT/pages/transactionService.html)
 * [Feedback form](https://nataliapylypenko.github.io/TasksFromGPT/pages/feedbackForm.html)
 * [Weather Service](https://nataliapylypenko.github.io/TasksFromGPT/pages/weatherService.html)
+* [Recursive function getAllCategoryIds](https://nataliapylypenko.github.io/recursion/)
 
+***
 
 <h1>Financial management system</h1>
 

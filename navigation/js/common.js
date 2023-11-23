@@ -1,36 +1,23 @@
-const data = [{
-    "id": "1",
-    "name": "Електроніка",
-    "subcategories": [
-        {
-            "id": "2",
-            "name": "Смартфони",
-            "subcategories": [
-                {
-                    "id": "3",
-                    "name": "Аксесуари",
-                    "subcategories": [] // Пустий масив означає, що немає додаткових підкатегорій
-                }
-            ]
-        },
-        {
-            "id": "4",
-            "name": "Комп'ютери",
-            "subcategories": []
-        }
-    ]
-}];
+class Topnav {
+    collectData() {
+        let headers = document.querySelectorAll('h2');
+        return [...headers].map(header => header.getAttribute('id'));
+    }
 
+    render() {
+        let nav = document.querySelector('.topnav');
+        let list = this.collectData();
 
-const getAllCategoryIds = (data) => {
-    let ids = [];
+        nav.innerHTML = [...list].map(li => {
+            return `<li><a href="#${li}">${this.upFirst(li)}</a></li>`;
+        }).join('');
+    }
 
-    data.forEach(item => {
-        ids.push(item['id']);
-        ids = [...ids, ...getAllCategoryIds(item['subcategories'])];
-    });
+    upFirst(word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }
+}
 
-    return ids;
-};
-
-console.log(getAllCategoryIds(data));
+const topnav = new Topnav();
+topnav.collectData();
+topnav.render();

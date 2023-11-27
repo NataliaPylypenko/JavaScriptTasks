@@ -7,6 +7,7 @@
 * [Weather Service](https://nataliapylypenko.github.io/TasksFromGPT/pages/weatherService.html)
 * [Recursive function getAllCategoryIds](https://nataliapylypenko.github.io/recursion/)
 * [Dynamic creation of the navigation menu](https://nataliapylypenko.github.io/navigation/)
+* [Dynamic creation of the navigation menu](https://nataliapylypenko.github.io/calendar/)
 
 ***
 

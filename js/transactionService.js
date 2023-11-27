@@ -296,19 +296,22 @@ const transactionFormComponent = (transactionService) => {
     renderCategorySelect();
 
     const handle = () => {
-        const newRecordForm = document.getElementById('newRecordForm');
+        const form = document.getElementById('newRecordForm');
 
-        newRecordForm.addEventListener('submit', function (e) {
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            let category = document.getElementById('categorySelect').value;
-            let type = document.querySelector('input[name="type"]:checked').value;
-            let amount = Math.abs(document.getElementById('amount').value);
-            let comment = document.getElementById('comment').value;
-            amount = type === 'income' ? amount : -amount;
-            newRecordForm.reset();
+            const myFormData = new FormData(form);
+            const FormDataObject = Object.fromEntries(myFormData);
 
-            transactionService.add(amount, category, null, comment);
+            form.reset();
+
+            transactionService.add(
+                FormDataObject.type === 'income' ? FormDataObject.amount : -FormDataObject.amount,
+                FormDataObject.categorySelect,
+                null,
+                FormDataObject.text
+            );
         });
     };
 

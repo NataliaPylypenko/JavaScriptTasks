@@ -70,15 +70,19 @@ class GalleryList {
   }
 
   generateList(galleryItems) {
-    galleryItems.forEach(galleryItem => {
-      `<li>
-        <a target="_blank" href="#">
-          <img src="${galleryItem.preview}" alt="${galleryItem.description}" width="50" height="34">
+    return galleryItems.map(galleryItem => {
+      return `<li class="gallery__item">
+        <a class="gallery__link" target="_blank" href="#">
+          <img class="gallery__image" src="${galleryItem.preview}" alt="${galleryItem.description}" width="500" height="340">
         </a>
       </li>`
-    })
+    });
+  }
+
+  render() {
+    this.element.innerHTML = this.generateList(galleryItems).join('');
   }
 }
 
-const gallery = new Gallery(document.querySelector('.js-gallery'));
-gallery.generateList(galleryItems);
+const gallery = new GalleryList(document.querySelector('.js-gallery'));
+gallery.render(galleryItems);

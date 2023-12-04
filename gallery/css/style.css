@@ -25,6 +25,7 @@ body {
   color: #212121;
 }
 
+/* Gallery */
 .gallery {
   display: grid;
   width: 1200px;

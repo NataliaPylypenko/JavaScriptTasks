@@ -63,3 +63,22 @@ const galleryItems = [
     description: 'Lighthouse Coast Sea',
   },
 ];
+
+class GalleryList {
+  constructor(element) {
+    this.element = element;
+  }
+
+  generateList(galleryItems) {
+    galleryItems.forEach(galleryItem => {
+      `<li>
+        <a target="_blank" href="#">
+          <img src="${galleryItem.preview}" alt="${galleryItem.description}" width="50" height="34">
+        </a>
+      </li>`
+    })
+  }
+}
+
+const gallery = new Gallery(document.querySelector('.js-gallery'));
+gallery.generateList(galleryItems);

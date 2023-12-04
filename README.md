@@ -1,10 +1,12 @@
-* [Tasks From GPT](https://nataliapylypenko.github.io/TasksFromGPT/)
+* [Tasks From GPT](https://nataliapylypenko.github.io/JavaScriptTasks/)
 
 ***
 
-* [Financial management system](https://nataliapylypenko.github.io/TasksFromGPT/transactionService)
-* [Feedback form](https://nataliapylypenko.github.io/TasksFromGPT/feedbackForm)
-* [Weather Service](https://nataliapylypenko.github.io/TasksFromGPT/weatherService)
-* [Recursive function getAllCategoryIds](https://nataliapylypenko.github.io/TasksFromGPT/recursion/)
-* [Dynamic creation of the navigation menu](https://nataliapylypenko.github.io/TasksFromGPT/navigation/)
-* [Dynamic creation of the navigation menu](https://nataliapylypenko.github.io/TasksFromGPT/calendar/)
+* [Financial management system](https://nataliapylypenko.github.io/JavaScriptTasks/transactionService)
+* [Feedback form](https://nataliapylypenko.github.io/JavaScriptTasks/feedbackForm)
+* [Weather Service](https://nataliapylypenko.github.io/JavaScriptTasks/weatherService)
+* [Recursive function getAllCategoryIds](https://nataliapylypenko.github.io/JavaScriptTasks/recursion/)
+* [Dynamic creation of the navigation menu](https://nataliapylypenko.github.io/JavaScriptTasks/navigation/)
+* [Guess The Number](https://nataliapylypenko.github.io/JavaScriptTasks/guessTheNumber/)
+* [Gallery](https://nataliapylypenko.github.io/JavaScriptTasks/gallery/)
+* [Calendar](https://nataliapylypenko.github.io/JavaScriptTasks/calendar/)

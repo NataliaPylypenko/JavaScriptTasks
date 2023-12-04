@@ -66,23 +66,101 @@ const galleryItems = [
 
 class GalleryList {
   constructor(element) {
-    this.element = element;
+      this.element = element;
   }
 
   generateList(galleryItems) {
     return galleryItems.map(galleryItem => {
       return `<li class="gallery__item">
-        <a class="gallery__link" target="_blank" href="#">
-          <img class="gallery__image" src="${galleryItem.preview}" alt="${galleryItem.description}" width="500" height="340">
+        <a class="gallery__link" href="${galleryItem.original}">
+          <img class="gallery__image"
+            src="${galleryItem.preview}"
+            alt="${galleryItem.description}"
+            data-source="${galleryItem.original}" 
+          />
         </a>
       </li>`
     });
   }
 
   render() {
-    this.element.innerHTML = this.generateList(galleryItems).join('');
+      this.element.innerHTML = this.generateList(galleryItems).join('');
+  }
+
+  onImageClick(callback) {
+      this.element.addEventListener('click', callback);
+  }
+}
+
+class Modal {
+  constructor(element) {
+    this.element = element;
+    this.image = document.querySelector('.lightbox__image');
+  }
+
+  openModal(src) {
+    this.element.classList.add('is-open');
+    this.image.src = src;
+  }
+
+  closeModal() {
+    this.element.classList.remove('is-open');
+    this.image.src = '';
+  }
+
+  onBtnClick(callback) {
+    this.element.addEventListener('click', callback);
+  }
+
+  onOverlayClick(callback) {
+    this.element.addEventListener('click', callback);
+  }
+
+  onEscClick(callback) {
+    document.addEventListener('keydown', callback);
+  }
+
+}
+
+class AppController {
+  constructor(gallery, modal) {
+    this.gallery = gallery;
+    this.modal = modal;
+  }
+
+  initialize() {
+    this.gallery.render(galleryItems);
+
+    this.gallery.onImageClick((e) => {
+      if(e.target.tagName === 'IMG') {
+        e.preventDefault();
+        const src = e.target.getAttribute('data-source');
+        this.modal.openModal(src);
+      }
+    });
+
+    this.modal.onBtnClick((e) => {
+      if(e.target.matches('[data-action="close-lightbox"]')) {
+        this.modal.closeModal();
+      }
+    });
+
+    this.modal.onOverlayClick((e) => {
+      if(e.target.className === 'lightbox__overlay') {
+        this.modal.closeModal();
+      }
+    });
+
+    this.modal.onEscClick((e) => {
+      if(e.key === "Escape") {
+        this.modal.closeModal();
+      }
+    });
   }
 }
 
 const gallery = new GalleryList(document.querySelector('.js-gallery'));
-gallery.render(galleryItems);
+const modal = new Modal(document.querySelector('.js-lightbox'));
+
+const appController = new AppController(gallery, modal);
+appController.initialize();

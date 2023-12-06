@@ -30,13 +30,16 @@ body {
     width: 100%;
 }
 
+/* Calendar */
+
 .calendar {
     background: #2b4450;
     border-radius: 4px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, .3);
-    height: 501px;
     width: 100%;
 }
+
+/* Current-date */
 
 .current-date {
     border-bottom: 1px solid rgba(73, 114, 133, .6);
@@ -50,6 +53,8 @@ body {
     font-size: 1.4em;
     font-weight: 300;
 }
+
+/* Current-month */
 
 .week-days {
     color: #dfebed;
@@ -81,12 +86,13 @@ body {
     width: 100%;
 }
 
-.last-month {
-    opacity: .3;
-}
-
 .weeks span {
     padding: 10px;
+}
+
+.weeks span.last-month,
+.weeks span.next-month {
+    opacity: .3;
 }
 
 .weeks span.active {
@@ -94,7 +100,8 @@ body {
     border-radius: 50%;
 }
 
-.weeks span:not(.last-month):hover {
+.weeks span:not(.last-month):hover,
+.weeks span:not(.next-month):hover {
     cursor: pointer;
     font-weight: 600;
 }

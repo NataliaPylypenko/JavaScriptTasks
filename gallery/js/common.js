@@ -87,7 +87,7 @@ class GalleryList {
       this.element.innerHTML = this.generateList(galleryItems).join('');
   }
 
-  onImageClick(callback) {
+  onClick(callback) {
       this.element.addEventListener('click', callback);
   }
 }
@@ -98,69 +98,85 @@ class Modal {
     this.image = document.querySelector('.lightbox__image');
   }
 
-  openModal(src) {
-    this.element.classList.add('is-open');
-    this.image.src = src;
-  }
-
-  closeModal() {
-    this.element.classList.remove('is-open');
-    this.image.src = '';
-  }
-
-  onBtnClick(callback) {
+  onClick(callback) {
     this.element.addEventListener('click', callback);
   }
 
-  onOverlayClick(callback) {
-    this.element.addEventListener('click', callback);
-  }
-
-  onEscClick(callback) {
+  onKeydown(callback) {
     document.addEventListener('keydown', callback);
   }
-
 }
 
 class AppController {
-  constructor(gallery, modal) {
+  constructor(galleryItems, gallery, modal) {
     this.gallery = gallery;
     this.modal = modal;
+    this.galleryItems = galleryItems;
   }
 
   initialize() {
-    this.gallery.render(galleryItems);
+    this.gallery.render(this.galleryItems);
 
-    this.gallery.onImageClick((e) => {
+    this.gallery.onClick((e) => {
       if(e.target.tagName === 'IMG') {
         e.preventDefault();
         const src = e.target.getAttribute('data-source');
-        this.modal.openModal(src);
+        this.openModal(src);
       }
     });
 
-    this.modal.onBtnClick((e) => {
-      if(e.target.matches('[data-action="close-lightbox"]')) {
-        this.modal.closeModal();
+    this.modal.onClick((e) => {
+      if(e.target.matches('[data-action="close-lightbox"]') || e.target.className === 'lightbox__overlay') {
+        this.closeModal();
       }
     });
 
-    this.modal.onOverlayClick((e) => {
-      if(e.target.className === 'lightbox__overlay') {
-        this.modal.closeModal();
-      }
-    });
-
-    this.modal.onEscClick((e) => {
+    this.modal.onKeydown((e) => {
       if(e.key === "Escape") {
-        this.modal.closeModal();
+        this.closeModal();
+      }
+
+      if(e.key === "ArrowRight") {
+        this.moveRight();
+      }
+
+      if(e.key === "ArrowLeft") {
+        this.moveLeft();
       }
     });
+  }
+
+  openModal(src) {
+    this.modal.element.classList.add('is-open');
+    this.modal.image.src = src;
+  }
+
+  closeModal() {
+    this.modal.element.classList.remove('is-open');
+    this.modal.image.src = '';
+  }
+
+  getActiveImg() {
+    return this.galleryItems.findIndex(item => item.original === this.modal.image.src);
+  }
+
+  moveRight() {
+    const index = this.getActiveImg();
+    if (index < this.galleryItems.length - 1) {
+      this.modal.image.src = this.galleryItems[index + 1].original;
+    }
+  }
+
+  moveLeft() {
+    const index = this.getActiveImg();
+    if (index > 0) {
+      this.modal.image.src = this.galleryItems[index - 1].original;
+    }
   }
 }
 
 const gallery = new GalleryList(document.querySelector('.js-gallery'));
 const modal = new Modal(document.querySelector('.js-lightbox'));
 
-const appController = new AppController(gallery, modal);
+const appController = new AppController(galleryItems, gallery, modal);
 appController.initialize();

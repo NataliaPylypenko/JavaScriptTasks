@@ -41,14 +41,14 @@ body {
 
 /* Current-date */
 
-.current-date {
+.currentDate {
     border-bottom: 1px solid rgba(73, 114, 133, .6);
     display: flex;
     justify-content: space-between;
     padding: 30px 40px;
 }
 
-.current-date h1 {
+.currentDate h1 {
     color: #dfebed;
     font-size: 1.4em;
     font-weight: 300;

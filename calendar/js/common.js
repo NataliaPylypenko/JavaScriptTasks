@@ -1,6 +1,7 @@
 class Calendar {
     constructor(element) {
         this.element = element;
+        this.weekDays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
     }
 
     generateCalendar() {
@@ -11,15 +12,7 @@ class Calendar {
         </div>
 
         <div class="current-month">
-                <ul class="week-days">
-                    <li>MON</li>
-                    <li>TUE</li>
-                    <li>WED</li>
-                    <li>THU</li>
-                    <li>FRI</li>
-                    <li>SAT</li>
-                    <li>SUN</li>
-                </ul>
+          <ul class="week-days">${this.weekDays.map(day => `<li>${day}</li>`).join('')}</ul>
         </div>
             
         <div class="weeks">

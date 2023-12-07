@@ -56,12 +56,22 @@ body {
 
 /* Current-month */
 
-.week-days {
-    color: #dfebed;
+.list {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     font-weight: 600;
-    padding: 30px 40px;
+    color: #dfebed;
+    padding: 10px 40px;
+}
+.list-item {
+    width: calc(100% / 7);
+    padding: 10px;
+    text-align: center;
+}
+
+.daysOfTheWeek {
+    font-weight: 600;
+    color: #dfebed;
 }
 
 .days {
@@ -71,28 +81,9 @@ body {
 }
 
 .weeks {
-    color: #fff;
-    display: flex;
-    flex-direction: column;
-    padding: 0 40px;
-}
-
-.weeks div {
-    display: flex;
     font-size: 1.2em;
     font-weight: 300;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    width: 100%;
-}
-
-.weeks span {
-    padding: 10px;
-}
-
-.weeks span.last-month,
-.weeks span.next-month {
-    opacity: .3;
+    color: #fff;
 }
 
 .weeks span.active {
@@ -100,8 +91,7 @@ body {
     border-radius: 50%;
 }
 
-.weeks span:not(.last-month):hover,
-.weeks span:not(.next-month):hover {
+.weeks span:hover {
     cursor: pointer;
     font-weight: 600;
 }

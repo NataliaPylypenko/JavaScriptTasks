@@ -1,35 +1,56 @@
 class Calendar {
-    constructor(element) {
+    constructor(element, year, month) {
         this.element = element;
+        this.weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        this.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+        this.year = year || new Date().getFullYear();
+        this.month = month ||  new Date().getMonth();
     }
 
-    generateCalendar(currentDate, daysOfTheWeek) {
-      return `
-        <div class="currentDate">
-          <h1>${currentDate.day} ${currentDate.number}</h1>
-          <h1>${currentDate.month} ${currentDate.year}</h1>
-        </div>
+    generateCalendar(year, month) {
+        const date = new Date(year, month);
 
-        <div class="daysOfTheWeek">
-          <ul class="week-days">${daysOfTheWeek.map(day => `<li>${day}</li>`).join('')}</ul>
-        </div>
-            
-        <div class="weeks">
-                <div>
-                    <span class="last-month">28</span>
-                    <span class="last-month">29</span>
-                    <span>01</span>
-                    <span>02</span>
-                    <span>03</span>
-                    <span>04</span>
-                    <span>05</span>
-                </div>
-        </div>
-      `
+        const currentDate = {
+            day: this.weekDays[new Date().getDay() === 0 ? 6 : date.getDay() - 1],
+            number: `${this.addZero(date.getDate())}th`,
+        };
+
+        const actualDate = {
+            month: this.monthNames[date.getMonth()],
+            year: date.getFullYear()
+        };
+
+        const countOfDays = new Date(year, (month + 1), 0).getDate();
+        const firstDayOfWeek = new Date(year, month, 1).getDay();
+        const days = new Array(firstDayOfWeek).fill('').concat([...new Array(countOfDays)].map((i, idx) => idx + 1));
+
+        return `
+            <div class="currentDate">
+              <h1>${currentDate.day} ${currentDate.number}</h1>
+              <h1>${actualDate.month} ${actualDate.year}</h1>
+            </div>
+    
+            <div class="daysOfTheWeek list">
+              ${this.daysOfTheWeek().map(day => `<span class="list-item">${day}</span>`).join('')}
+            </div>
+                
+            <div class="weeks list">
+                ${days.map(day =>`<span class="list-item">${day}</span>`).join('')}  
+            </div>
+        `
     }
 
-    render(currentDate, daysOfTheWeek) {
-        this.element.innerHTML = this.generateCalendar(currentDate, daysOfTheWeek);
+    daysOfTheWeek() {
+        return this.weekDays.map(day => day.substr(0, 3).toUpperCase())
+    }
+
+    addZero(num) {
+        return num > 0 && num < 10 ? '0' + num : num;
+    }
+
+    render() {
+        this.element.innerHTML = this.generateCalendar(this.year, this.month);
     }
 }
 
@@ -38,30 +59,10 @@ class DateSelector {}
 class AppController {
     constructor(calendar) {
         this.calendar = calendar;
-        this.weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        this.month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     }
 
     initialize() {
-        this.calendar.render(this.getCurrentDate(), this.daysOfTheWeek());
-    }
-
-    getCurrentDate() {
-        let date = new Date();
-        return {
-            day: this.weekDays[date.getDay() === 0 ? 6 : date.getDay() - 1],
-            number: `${this.addZero(date.getDate())}th`,
-            month: this.month[date.getMonth()],
-            year: date.getFullYear()
-        }
-    }
-
-    addZero(num) {
-        return num > 0 && num < 10 ? '0' + num : num;
-    }
-
-    daysOfTheWeek() {
-        return this.weekDays.map(day => day.substr(0, 3).toUpperCase())
+        this.calendar.render();
     }
 }
 

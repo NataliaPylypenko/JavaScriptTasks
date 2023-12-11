@@ -23,7 +23,8 @@ class Calendar {
         };
 
         const countOfDays = new Date(year, (month + 1), 0).getDate();
-        const firstDayOfWeek = new Date(year, month, 1).getDay() === 0 ? 6 : new Date().getDay() - 1;
+        const numberThisDay = new Date(year, month, 1).getDay();
+        const firstDayOfWeek = numberThisDay === 0 ? 6 : numberThisDay - 1;
         const days = new Array(firstDayOfWeek).fill('').concat([...new Array(countOfDays)].map((i, idx) => idx + 1));
 
         return `

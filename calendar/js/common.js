@@ -4,16 +4,17 @@ class Calendar {
         this.weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         this.monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
-        this.year = year || new Date().getFullYear();
-        this.month = month ||  new Date().getMonth();
+        this.today = new Date();
+        this.year = year || this.today.getFullYear();
+        this.month = month || this.today.getMonth();
     }
 
     generateCalendar(year, month) {
         const date = new Date(year, month);
 
         const currentDate = {
-            day: this.weekDays[new Date().getDay() === 0 ? 6 : date.getDay() - 1],
-            number: `${this.addZero(date.getDate())}th`,
+            day: this.weekDays[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1],
+            number: `${this.addZero(new Date().getDate())}`,
         };
 
         const actualDate = {
@@ -22,12 +23,12 @@ class Calendar {
         };
 
         const countOfDays = new Date(year, (month + 1), 0).getDate();
-        const firstDayOfWeek = new Date(year, month, 1).getDay();
+        const firstDayOfWeek = new Date(year, month, 1).getDay() === 0 ? 6 : new Date().getDay() - 1;
         const days = new Array(firstDayOfWeek).fill('').concat([...new Array(countOfDays)].map((i, idx) => idx + 1));
 
         return `
             <div class="currentDate">
-              <h1>${currentDate.day} ${currentDate.number}</h1>
+              <h1>${currentDate.day} ${currentDate.number}+'th'</h1>
               <h1>${actualDate.month} ${actualDate.year}</h1>
             </div>
     
@@ -36,7 +37,7 @@ class Calendar {
             </div>
                 
             <div class="weeks list">
-                ${days.map(day =>`<span class="list-item">${day}</span>`).join('')}  
+                ${days.map(day =>`<span class="list-item ${Number(currentDate.number) === day ? 'active' : ''}">${day}</span>`).join('')}  
             </div>
         `
     }

@@ -28,7 +28,7 @@ class Calendar {
 
         return `
             <div class="currentDate">
-              <h1>${currentDate.day} ${currentDate.number}+'th'</h1>
+              <h1>${currentDate.day} ${currentDate.number}th</h1>
               <h1>${actualDate.month} ${actualDate.year}</h1>
             </div>
     
